@@ -17,7 +17,7 @@ public class Main {
     public static final String subscriptionKey = "<Subscription Key>";
 
     // Choose which anomaly detection way you want to use and change the uriBase's second part
-    public static final String rootUrl = "https://westus2.api.cognitive.microsoft.com/anomalyfinder/v2.0";
+    public static final String rootUrl = "https://westus2.api.cognitive.microsoft.com/anomalydetector/v1.0";
     public static final String lastDetect = "/timeseries/last/detect";
     public static final String entireDetect = "/timeseries/entire/detect";
     public static final String uriBase = rootUrl + lastDetect;
