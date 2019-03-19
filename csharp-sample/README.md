@@ -1,6 +1,6 @@
-# Microsoft Cognitive Services Anomaly Finder tutorial projects
+# Microsoft Cognitive Services Anomaly Detector tutorial projects
 
-This tutorial shows the features of the Microsoft Cognitive Services Anomaly Finder REST API by using C#, Java, Python and JavaScript(HTML).
+This tutorial shows the features of the Microsoft Cognitive Services Anomaly Detector REST API by using C#, Java, Python and JavaScript(HTML).
 
 ## Getting started
 
