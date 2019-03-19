@@ -1,0 +1,10 @@
+{
+    "expectedValue": 35344244.421857625,
+    "isAnomaly": false,
+    "isNegativeAnomaly": false,
+    "isPositiveAnomaly": false,
+    "lowerMargin": 353442.44421857625,
+    "period": 7,
+    "suggestedWindow": 29,
+    "upperMargin": 353442.44421857625
+}
