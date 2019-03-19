@@ -29,7 +29,7 @@ public class Main {
     public static final String uriBase = rootUrl + lastDetect;
 
     public static void main(String[] args) throws FileNotFoundException {
-        String resourceName = "/sample.json";
+        String resourceName = "/request-data.json";
         InputStream is = Main.class.getResourceAsStream(resourceName);
         if (is == null) {
             throw new NullPointerException("Cannot find resource file " + resourceName);
