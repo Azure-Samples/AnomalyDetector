@@ -97,8 +97,7 @@
             this.urlBox.Name = "urlBox";
             this.urlBox.Size = new System.Drawing.Size(428, 20);
             this.urlBox.TabIndex = 6;
-            this.urlBox.Text = "https://westus2.api.cognitive.microsoft.com/anomalyfinder/v2.0/timeseries/last/de" +
-    "tect";
+            this.urlBox.Text = "https://westus2.api.cognitive.microsoft.com/anomalydetector/v1.0/timeseries/last/detect";
             // 
             // label4
             // 

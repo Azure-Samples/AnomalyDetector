@@ -54,12 +54,14 @@ namespace AnomalyDetection
                     if (this.radioButton1.Checked)
                     {
                         var response = JsonConvert.DeserializeObject<LResponse>(res);
-                        this.responseData.Text = JsonConvert.SerializeObject(response, Formatting.Indented);
+                        this.responseData.Text = JsonConvert.SerializeObject(response, Formatting.Indented,
+                        new JsonSerializerSettings { ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver() });
                     }
                     else
                     {
                         var response = JsonConvert.DeserializeObject<EResponse>(res);
-                        this.responseData.Text = JsonConvert.SerializeObject(response, Formatting.Indented);
+                        this.responseData.Text = JsonConvert.SerializeObject(response, Formatting.Indented,
+                        new JsonSerializerSettings { ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver() });
                     }
                     this.responseData.Text += "\n========== Response Evaluation ==========\n";
                     this.responseData.Text += "\nUsing the response to do anything you need.\n";
@@ -81,7 +83,8 @@ namespace AnomalyDetection
         {
             this.requestData.Text = JsonConvert.SerializeObject(this._request, Formatting.Indented, new JsonSerializerSettings
             {
-                NullValueHandling = NullValueHandling.Ignore
+                NullValueHandling = NullValueHandling.Ignore,
+                ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver()
             });
         }
         private void Form1_Load(object sender, EventArgs e)
