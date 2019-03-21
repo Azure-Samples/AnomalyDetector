@@ -12,6 +12,17 @@ products:
 
 This repository contains samples for the Anomaly Detection API, which is an [Azure Cognitive Service](https://docs.microsoft.com/azure/cognitive-services/). The Anomaly Detector API enables you to monitor and find abnormalities in your time series data by automatically identifying and applying the correct statistical models, regardless of industry, scenario, or data volume. Using your time series data, the API can find anomalies as a batch throughout your data, or determine if your latest data point is an anomaly. 
 
+## Contents
+
+| File/folder | Description |
+|-------------|-------------|
+| `example-data`       | Example data to be sent to the API, along with example API responses.  |
+| `quickstarts`       | Sample code for the Anomaly Detector API quickstarts.  |
+| `example-data`       | Example data to be sent to the API, along with example API responses.  |
+| `.gitignore` | Define what to ignore at commit time. |
+| `README.md` | This README file. |
+| `LICENSE`   | The license for the sample. |
+
 ## Prerequisites
 
 You must have a [Cognitive Services API account](https://docs.microsoft.com/azure/cognitive-services/cognitive-services-apis-create-account) with access to the Anomaly detector API. If you don't have an Azure subscription, you can [create an account](https://azure.microsoft.com/try/cognitive-services/?api=bing-web-search-api) for free. Before continuing, You will need the access key provided after activating your free trial, or a paid subscription key from your Azure dashboard.
