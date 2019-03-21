@@ -38,7 +38,7 @@ You can either run this sample locally as a Jupyter notebook, or deploy it to Az
 
 ## Deploy to Azure
 
-<a href="https://notebooks.azure.com/AzureAnomalyDetection/projects/anomalyfinder" target="_blank">
+<a href="https://notebooks.azure.com/AzureAnomalyDetection/projects/anomalydetector" target="_blank">
 <img src="http://azuredeploy.net/deploybutton.png"/>
 </a>
 
