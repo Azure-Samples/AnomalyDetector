@@ -59,4 +59,4 @@ The Anomaly Detector API lets you monitor and detect abnormalities in your time 
 
 ## Next steps
 
-For more information, see the [Anomaly Detector API documentation](https://docs.microsoft.com/en-us/azure/cognitive-services/anomaly-detector/overview). 
+For more information, see the [Anomaly Detector API documentation](https://aka.ms/anomaly-detector-documentation). 
