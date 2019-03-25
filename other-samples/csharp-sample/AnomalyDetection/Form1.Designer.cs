@@ -97,7 +97,7 @@
             this.urlBox.Name = "urlBox";
             this.urlBox.Size = new System.Drawing.Size(428, 20);
             this.urlBox.TabIndex = 6;
-            this.urlBox.Text = "https://westus2.api.cognitive.microsoft.com/anomalydetector/v1.0/timeseries/last/detect";
+            this.urlBox.Text = "https://westus2.api.cognitive.microsoft.com/";
             // 
             // label4
             // 
@@ -162,7 +162,7 @@
             this.radioButton1.TabStop = true;
             this.radioButton1.Text = "Detect anomaly status for the last point in the series.";
             this.radioButton1.UseVisualStyleBackColor = true;
-            this.radioButton1.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
+            // this.radioButton1.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
             // 
             // radioButton2
             // 
@@ -173,7 +173,7 @@
             this.radioButton2.TabIndex = 17;
             this.radioButton2.Text = "Detect anomaly points for the entire series.";
             this.radioButton2.UseVisualStyleBackColor = true;
-            this.radioButton2.CheckedChanged += new System.EventHandler(this.radioButton2_CheckedChanged);
+            // this.radioButton2.CheckedChanged += new System.EventHandler(this.radioButton2_CheckedChanged);
             // 
             // Form1
             // 

@@ -39,38 +39,35 @@ namespace AnomalyDetection
             try
             {
                 var url = this.urlBox.Text;
-                var match = Regex.Match(url, "(?<BaseAddress>https?://[^/]+)(?<Url>/*.+)");
-                if (match.Success)
+                var path = "anomalydetector/v1.0/timeseries/entire/detect";
+                if (radioButton1.Checked)
                 {
-                    this.responseData.Clear();
-                    SetRequestData();
-                    var res = await client.Request(
-                        match.Groups["BaseAddress"].Value,
-                        match.Groups["Url"].Value,
-                        this.subscriptionKey.Text,
-                        this.requestData.Text);
+                    path = "anomalydetector/v1.0/timeseries/last/detect";
+                }
+                this.responseData.Clear();
+                SetRequestData();
+                var res = await client.Request(
+                    url,
+                    path,
+                    this.subscriptionKey.Text,
+                    this.requestData.Text);
 
 
-                    if (this.radioButton1.Checked)
-                    {
-                        var response = JsonConvert.DeserializeObject<LResponse>(res);
-                        this.responseData.Text = JsonConvert.SerializeObject(response, Formatting.Indented,
-                        new JsonSerializerSettings { ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver() });
-                    }
-                    else
-                    {
-                        var response = JsonConvert.DeserializeObject<EResponse>(res);
-                        this.responseData.Text = JsonConvert.SerializeObject(response, Formatting.Indented,
-                        new JsonSerializerSettings { ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver() });
-                    }
-                    this.responseData.Text += "\n========== Response Evaluation ==========\n";
-                    this.responseData.Text += "\nUsing the response to do anything you need.\n";
-                    this.responseData.Text += "\n========== Evaluation Done ==========\n";
+                if (this.radioButton1.Checked)
+                {
+                    var response = JsonConvert.DeserializeObject<LResponse>(res);
+                    this.responseData.Text = JsonConvert.SerializeObject(response, Formatting.Indented,
+                    new JsonSerializerSettings { ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver() });
                 }
                 else
                 {
-                    this.responseData.Text = "Incorrect endpoint.";
+                    var response = JsonConvert.DeserializeObject<EResponse>(res);
+                    this.responseData.Text = JsonConvert.SerializeObject(response, Formatting.Indented,
+                    new JsonSerializerSettings { ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver() });
                 }
+                this.responseData.Text += "\n========== Response Evaluation ==========\n";
+                this.responseData.Text += "\nUsing the response to do anything you need.\n";
+                this.responseData.Text += "\n========== Evaluation Done ==========\n";
 
             }
             catch (Exception ex)
