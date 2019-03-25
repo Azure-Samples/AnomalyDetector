@@ -26,13 +26,14 @@ public class Main {
     private static final String entireDetect = "/timeseries/entire/detect";
     private static final String uriBase = rootUrl + lastDetect;
 
-    public static void main(String[] args) throws IOException {
-        File file = new File(System.getProperty("user.dir"));
-        String resourceName = file.getParentFile().getParent() + "\\example-data\\request-data.json";
-        InputStream in = new FileInputStream(resourceName);
-        JSONTokener tokener = new JSONTokener(in);
+    public static void main(String[] args) throws FileNotFoundException  {
+        String resourceName = "/request-data.json";
+        InputStream is = Main.class.getResourceAsStream(resourceName);
+        if (is == null) {
+            throw new NullPointerException("Cannot find resource file " + resourceName);
+        }
+        JSONTokener tokener = new JSONTokener(is);
         String content = new JSONObject(tokener).toString();
-        in.close();
         CloseableHttpClient client = HttpClients.createDefault();
         HttpPost request = new HttpPost(uriBase);
 
