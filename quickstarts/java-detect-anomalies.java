@@ -45,7 +45,7 @@ public class JavaDetect {
     static void detectAnomaliesBatch(String requestData) {
         System.out.println("Detecting anomalies as a batch");
 
-        String result = request(batchDetectionUrl, endpoint, subscriptionKey, requestData);
+        String result = sendRequest(batchDetectionUrl, endpoint, subscriptionKey, requestData);
         if (result != null) {
             System.out.println(result);
 
@@ -62,11 +62,11 @@ public class JavaDetect {
 
     static void detectAnomaliesLatest(String requestData) {
         System.out.println("Determining if latest data point is an anomaly");
-        String result = request(latestPointDetectionUrl, endpoint, subscriptionKey, requestData);
+        String result = sendRequest(latestPointDetectionUrl, endpoint, subscriptionKey, requestData);
         System.out.println(result);
     }
 
-    static String request(String apiAddress, String endpoint, String subscriptionKey, String requestData) {
+    static String sendRequest(String apiAddress, String endpoint, String subscriptionKey, String requestData) {
         try (CloseableHttpClient client = HttpClients.createDefault()) {
             HttpPost request = new HttpPost(endpoint + apiAddress);
             // Request headers.
