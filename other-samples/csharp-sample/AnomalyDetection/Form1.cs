@@ -9,7 +9,7 @@ namespace AnomalyDetection
 {
     public partial class Form1 : Form
     {
-        private string _dataFile = "request.json";
+        private string _dataFile = "request-data.json";
         private Request _request;
 
         public Form1()
