@@ -10,9 +10,7 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.*;
 
 public class Main {
     // **********************************************
@@ -20,23 +18,21 @@ public class Main {
     // **********************************************
 
     // Replace the subscriptionKey string value with your valid subscription key.
-    public static final String subscriptionKey = "<Subscription Key>";
+    private static final String subscriptionKey = "<Subscription Key>";
 
     // Choose which anomaly detection way you want to use and change the uriBase's second part
-    public static final String rootUrl = "https://westus2.api.cognitive.microsoft.com/anomalydetector/v1.0";
-    public static final String lastDetect = "/timeseries/last/detect";
-    public static final String entireDetect = "/timeseries/entire/detect";
-    public static final String uriBase = rootUrl + lastDetect;
+    private static final String rootUrl = "https://westus2.api.cognitive.microsoft.com/anomalydetector/v1.0";
+    private static final String lastDetect = "/timeseries/last/detect";
+    private static final String entireDetect = "/timeseries/entire/detect";
+    private static final String uriBase = rootUrl + lastDetect;
 
-    public static void main(String[] args) throws FileNotFoundException {
-        String resourceName = "/request-data.json";
-        InputStream is = Main.class.getResourceAsStream(resourceName);
-        if (is == null) {
-            throw new NullPointerException("Cannot find resource file " + resourceName);
-        }
-        JSONTokener tokener = new JSONTokener(is);
+    public static void main(String[] args) throws IOException {
+        File file = new File(System.getProperty("user.dir"));
+        String resourceName = file.getParentFile().getParent() + "\\example-data\\request-data.json";
+        InputStream in = new FileInputStream(resourceName);
+        JSONTokener tokener = new JSONTokener(in);
         String content = new JSONObject(tokener).toString();
-
+        in.close();
         CloseableHttpClient client = HttpClients.createDefault();
         HttpPost request = new HttpPost(uriBase);
 
