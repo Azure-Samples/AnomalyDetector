@@ -31,11 +31,7 @@ If the request is successful, the JSON response is returned.
 def send_request(endpoint, url, subscription_key, request_data):
     headers = {'Content-Type': 'application/json', 'Ocp-Apim-Subscription-Key': subscription_key}
     response = requests.post(endpoint+url, data=json.dumps(request_data), headers=headers)
-    if response.status_code == 200:
-        return json.loads(response.content.decode("utf-8"))
-    else:
-        print(response.status_code)
-        raise Exception(response.text)
+    return json.loads(response.content.decode("utf-8"))
 
 """
 Detect anomalies throughout the time series data by submitting it as a batch to the API.
@@ -46,13 +42,16 @@ def detect_batch(request_data):
     result = send_request(endpoint, batch_detection_url, subscription_key, request_data)
     print(json.dumps(result, indent=4))
 
-    # Find and display the positions of anomalies in the data set
-    anomalies = result["isAnomaly"]
-    print("Anomalies detected in the following data positions:")
+    if result.get('code') != None:
+        print("Detection failed. ErrorCode:{}, ErrorMessage:{}".format(result['code'], result['message']))
+    else:
+        # Find and display the positions of anomalies in the data set
+        anomalies = result["isAnomaly"]
+        print("Anomalies detected in the following data positions:")
 
-    for x in range(len(anomalies)):
-        if anomalies[x] == True:
-            print (x)
+        for x in range(len(anomalies)):
+            if anomalies[x] == True:
+                print (x)
 
 """
 Detect if the latest data point in the time series is an anomaly.
@@ -65,7 +64,7 @@ def detect_latest(request_data):
 
 
 # read json time series data from file
-file_handler = open (data_location)
+file_handler = open(data_location)
 json_data = json.load(file_handler)
 
 # send the request

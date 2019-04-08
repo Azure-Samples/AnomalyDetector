@@ -36,7 +36,7 @@ public class JavaDetect {
 
     public static void main(String[] args) throws Exception {
 
-        String requestData = new String(Files.readAllBytes(Paths.get(dataPath)), "UTF-8");
+        String requestData = new String(Files.readAllBytes(Paths.get(dataPath)), "utf-8");
 
         detectAnomaliesBatch(requestData);
         detectAnomaliesLatest(requestData);
@@ -50,13 +50,17 @@ public class JavaDetect {
             System.out.println(result);
 
             JSONObject jsonObj = new JSONObject(result);
-            JSONArray jsonArray = jsonObj.getJSONArray("isAnomaly");
-            System.out.println("Anomalies found in the following data positions:");
-            for (int i = 0; i < jsonArray.length(); ++i) {
-                if (jsonArray.getBoolean(i))
-                    System.out.print(i + ", ");
+            if (jsonObj.has("code")) {
+                System.out.println(String.format("Detection failed. ErrorCode:%s, ErrorMessage:%s", jsonObj.getString("code"), jsonObj.getString("message")));
+            } else {
+                JSONArray jsonArray = jsonObj.getJSONArray("isAnomaly");
+                System.out.println("Anomalies found in the following data positions:");
+                for (int i = 0; i < jsonArray.length(); ++i) {
+                    if (jsonArray.getBoolean(i))
+                        System.out.print(i + ", ");
+                }
+                System.out.println();
             }
-            System.out.println();
         }
     }
 

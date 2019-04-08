@@ -55,21 +55,28 @@ namespace Console
             dynamic jsonObj = Newtonsoft.Json.JsonConvert.DeserializeObject(result);
             System.Console.WriteLine(jsonObj);
 
-            //Find and display the positions of anomalies in the data set
-            bool[] anomalies = jsonObj["isAnomaly"].ToObject<bool[]>();
-            System.Console.WriteLine("\n Anomalies detected in the following data positions:");
-            for (var i = 0; i < anomalies.Length; i++)
+            if (jsonObj["code"] != null)
             {
-                if (anomalies[i])
+                System.Console.WriteLine($"Detection failed. ErrorCode:{jsonObj["code"]}, ErrorMessage:{jsonObj["message"]}");
+            }
+            else
+            {
+                //Find and display the positions of anomalies in the data set
+                bool[] anomalies = jsonObj["isAnomaly"].ToObject<bool[]>();
+                System.Console.WriteLine("\nAnomalies detected in the following data positions:");
+                for (var i = 0; i < anomalies.Length; i++)
                 {
-                    System.Console.Write(i + ", ");
+                    if (anomalies[i])
+                    {
+                        System.Console.Write(i + ", ");
+                    }
                 }
             }
         }
 
         static void detectAnomaliesLatest(string requestData)
         {
-            System.Console.WriteLine("\n\n Determining if latest data point is an anomaly");
+            System.Console.WriteLine("\n\nDetermining if latest data point is an anomaly");
             //construct the request
             var result = Request(
                 endpoint,
@@ -92,7 +99,7 @@ namespace Console
         /// <returns>The JSON string for anomaly points and expected values.</returns>
         static async Task<string> Request(string apiAddress, string endpoint, string subscriptionKey, string requestData)
         {
-            using (HttpClient client = new HttpClient { apiAddress = new Uri(apiAddress) })
+            using (HttpClient client = new HttpClient { BaseAddress = new Uri(apiAddress) })
             {
                 System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -100,14 +107,7 @@ namespace Console
 
                 var content = new StringContent(requestData, Encoding.UTF8, "application/json");
                 var res = await client.PostAsync(endpoint, content);
-                if (res.IsSuccessStatusCode)
-                {
-                    return await res.Content.ReadAsStringAsync();
-                }
-                else
-                {
-                    return $"ErrorCode: {res.StatusCode}";
-                }
+                return await res.Content.ReadAsStringAsync();
             }
         }
     }
