@@ -12,14 +12,14 @@ namespace ConsoleApplication1
     {
         static void Main(string[] args)
         {
-            string apiKey = "[YOUR_SUBSCRIPTION_KEY]";
+            string key = "[YOUR_SUBSCRIPTION_KEY]";
             string endpoint = "[YOUR_ENDPOINT_URL]";
 
             // Anomaly detection samples.
             try
             {
-                EntireDetectSample.RunAsync(endpoint, apiKey).Wait();
-                LastDetectSample.RunAsync(endpoint, apiKey).Wait();
+                EntireDetectSample.RunAsync(endpoint, key).Wait();
+                LastDetectSample.RunAsync(endpoint, key).Wait();
             }
             catch (Exception e)
             {
@@ -108,7 +108,7 @@ namespace ConsoleApplication1
     {
         public static async Task RunAsync(string endpoint, string key)
         {
-            Console.WriteLine("Sample of detecting whether the latest point in series is anomaly");
+            Console.WriteLine("Sample of detecting whether the latest point in series is anomaly.");
 
             IAnomalyDetectorClient client = new AnomalyDetectorClient(new ApiKeyServiceClientCredentials(key))
             {
