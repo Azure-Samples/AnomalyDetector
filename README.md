@@ -39,7 +39,6 @@ To run the demo, complete the following steps:
 5.	Fill in the key in cell containing:  subscription_key = '' #Here you have to paste your primary key. You can get the key by creating a [Cognitive Services account](../cognitive-services-apis-create-account.md).
 6.	In the Notebook main menu, click Cell->run all
 
-> [!NOTE]
 > Warning: Uncheck the "Public" option when you clone your instance or your code and data in the project is visible to everyone. You could also change the privacy settings in your clone. 
 
 ## Data requirements
