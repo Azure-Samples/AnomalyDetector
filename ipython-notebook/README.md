@@ -48,6 +48,8 @@ You can either run this sample locally as a Jupyter notebook, or deploy it to Az
 4. Add your valid Anomaly Detector API subscription key to the `subscription_key` variable.
 5. On the top menu bar, click **Cell**, then **Run All**.
 
+> Warning: Uncheck the "Public" option when you clone your instance or your code and data in the project is visible to everyone. You could also change the privacy settings in your clone.
+
 ## Key concepts
 
 The Anomaly Detector API lets you monitor and detect abnormalities in your time series data without previous experience in machine learning. The API adapts by automatically identifying and applying the best fitting statistical models to your data, regardless of industry, scenario, or data volume. These python notebooks cover the following examples. 
