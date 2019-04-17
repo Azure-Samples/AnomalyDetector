@@ -29,7 +29,7 @@ You must have a [Cognitive Services API account](https://docs.microsoft.com/azur
 
 ## Demo
 
-To quickly begin using the Anomaly Detector API, try an [online demo](https://notebooks.azure.com/AzureAnomalyDetection/projects/anomalyfinder). This demo runs in a web-hosted Jupyter notebook and shows you how to send an API request, and visualize the result.
+To quickly begin using the Anomaly Detector API, try an [online demo](https://notebooks.azure.com/AzureAnomalyDetection/projects/anomalydetector). This demo runs in a web-hosted Jupyter notebook and shows you how to send an API request, and visualize the result.
 
 To run the demo, complete the following steps:
   
