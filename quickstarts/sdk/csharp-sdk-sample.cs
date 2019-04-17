@@ -12,8 +12,8 @@ namespace ConsoleApplication1
     {
         static void Main(string[] args)
         {
-            string key = "[YOUR_SUBSCRIPTION_KEY]";
             string endpoint = "[YOUR_ENDPOINT_URL]";
+            string key = "[YOUR_SUBSCRIPTION_KEY]";
 
             // Anomaly detection samples.
             try

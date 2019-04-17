@@ -89,8 +89,8 @@ def last_detect_sample(endpoint, key):
 
 
 if __name__ == "__main__":
-    endpoint = '[YOUR_SUBSCRIPTION_KEY]'
-    key = '[YOUR_ENDPOINT_URL]'
+    endpoint = '[YOUR_ENDPOINT_URL]'
+    key = '[YOUR_SUBSCRIPTION_KEY]'
 
     try:
         entire_dectect_sample(endpoint, key)

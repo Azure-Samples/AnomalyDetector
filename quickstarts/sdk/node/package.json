@@ -1,0 +1,18 @@
+{
+  "name": "testadsdk",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "tsc": "tsc",
+    "index": "tsc && node ./build/index.js"
+  },
+  "author": "zhuxia@microsoft.com",
+  "license": "ISC",
+  "dependencies": {
+    "@azure/cognitiveservices-anomalydetector": "^1.0.0",
+    "tsc": "^1.20150623.0",
+    "typescript": "^3.4.3"
+  }
+}

@@ -125,8 +125,8 @@ class LastDetectSample
     end
 end
 
-endpoint = '[YOUR_SUBSCRIPTION_KEY]'
-key = '[YOUR_ENDPOINT_URL]'
+endpoint = '[YOUR_ENDPOINT_URL]'
+key = '[YOUR_SUBSCRIPTION_KEY]'
 
 # Anomaly detection samples.
 begin
