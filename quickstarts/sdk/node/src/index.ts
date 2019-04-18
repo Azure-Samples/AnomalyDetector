@@ -70,10 +70,10 @@ const endpoint = "[YOUR_ENDPOINT_URL]";
 const key = "[YOUR_SUBSCRIPTION_KEY]";
 const path = "[PATH_TO_TIME_SERIES_DATA]";
 
-const body: AnomalyDetectorModels.Request = {
+const request: AnomalyDetectorModels.Request = {
   series: read_series_from_file(path),
   granularity: "daily",
 };
-entire_detect_sample(endpoint, key, body);
-last_detect_sample(endpoint, key, body);
+entire_detect_sample(endpoint, key, request);
+last_detect_sample(endpoint, key, request);
 
