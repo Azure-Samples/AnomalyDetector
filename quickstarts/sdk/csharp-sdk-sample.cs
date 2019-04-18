@@ -21,8 +21,11 @@ namespace ConsoleApplication1
             // Anomaly detection samples.
             try
             {
-                EntireDetectSampleAsync(endpoint, key, path).Wait();
-                LastDetectSampleAsync(endpoint, key, path).Wait();
+                List<Point> series = GetSeriesFromFile(path);
+                Request request = new Request(series, Granularity.Daily);
+
+                EntireDetectSampleAsync(endpoint, key, request).Wait();
+                LastDetectSampleAsync(endpoint, key, request).Wait();
             }
             catch (Exception e)
             {
@@ -52,7 +55,7 @@ namespace ConsoleApplication1
                 .Select(e => new Point(DateTime.Parse(e[0]), Double.Parse(e[1]))).ToList();
         }
 
-        static async Task EntireDetectSampleAsync(string endpoint, string key, string path)
+        static async Task EntireDetectSampleAsync(string endpoint, string key, Request request)
         {
             Console.WriteLine("Sample of detecting anomalies in the entire series.");
 
@@ -61,14 +64,13 @@ namespace ConsoleApplication1
                 Endpoint = endpoint
             };
 
-            List<Point> series = GetSeriesFromFile(path);
-            Request request = new Request(series, Granularity.Daily);
+
             EntireDetectResponse result = await client.EntireDetectAsync(request).ConfigureAwait(false);
 
             if (result.IsAnomaly.Contains(true))
             {
                 Console.WriteLine("Anomaly was detected from the series at index:");
-                for (int i = 0; i < series.Count; ++i)
+                for (int i = 0; i < request.Series.Count; ++i)
                 {
                     if (result.IsAnomaly[i])
                     {
@@ -84,7 +86,7 @@ namespace ConsoleApplication1
             }
         }
 
-        static async Task LastDetectSampleAsync(string endpoint, string key, string path)
+        static async Task LastDetectSampleAsync(string endpoint, string key, Request request)
         {
             Console.WriteLine("Sample of detecting whether the latest point in series is anomaly");
 
@@ -93,8 +95,6 @@ namespace ConsoleApplication1
                 Endpoint = endpoint
             };
 
-            List<Point> series = GetSeriesFromFile(path);
-            Request request = new Request(series, Granularity.Daily);
             LastDetectResponse result = await client.LastDetectAsync(request).ConfigureAwait(false);
 
             if (result.IsAnomaly)
