@@ -5,7 +5,7 @@ from msrest.authentication import CognitiveServicesCredentials
 import pandas as pd
 
 
-def entire_dectect_sample(endpoint, key, request):
+def entire_detect_sample(endpoint, key, request):
     print('Sample of detecting anomalies in the entire series.')
 
     client = AnomalyDetectorClient(endpoint, CognitiveServicesCredentials(key))
@@ -47,7 +47,7 @@ if __name__ == "__main__":
         series = get_series_from_file(path)
         request = Request(series=series, granularity=Granularity.daily)
 
-        entire_dectect_sample(endpoint, key, request)
+        entire_detect_sample(endpoint, key, request)
         last_detect_sample(endpoint, key, request)
     except Exception as e:
         if isinstance(e, APIErrorException):
