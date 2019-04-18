@@ -4,6 +4,7 @@ namespace ConsoleApplication1
 {
     using System;
     using System.IO;
+    using System.Text;
     using System.Linq;
     using System.Collections.Generic;
     using System.Threading.Tasks;
@@ -48,7 +49,7 @@ namespace ConsoleApplication1
 
         static List<Point> GetSeriesFromFile(string path)
         {
-            return File.ReadAllLines(path)
+            return File.ReadAllLines(path, Encoding.UTF8)
                 .Where(e => e.Trim().Length != 0)
                 .Select(e => e.Split(','))
                 .Where(e => e.Length == 2)
@@ -88,7 +89,7 @@ namespace ConsoleApplication1
 
         static async Task LastDetectSampleAsync(string endpoint, string key, Request request)
         {
-            Console.WriteLine("Sample of detecting whether the latest point in series is anomaly");
+            Console.WriteLine("Sample of detecting whether the latest point in series is anomaly.");
 
             IAnomalyDetectorClient client = new AnomalyDetectorClient(new ApiKeyServiceClientCredentials(key))
             {

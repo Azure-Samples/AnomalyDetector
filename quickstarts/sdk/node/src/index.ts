@@ -1,7 +1,10 @@
 import * as msRest from "@azure/ms-rest-js";
 import { AnomalyDetectorClient, AnomalyDetectorModels, AnomalyDetectorMappers } from "@azure/cognitiveservices-anomalydetector";
+import * as fs from 'fs';
+import parse from 'csv-parse/lib/sync';
 
-function entire_detect_sample(endpoint: string, key: string){
+function entire_detect_sample(endpoint: string, key: string, request: AnomalyDetectorModels.Request){
+  console.log("Sample of detecting anomalies in the entire series.");
   const options: msRest.ApiKeyCredentialOptions = {
     inHeader: {
       "Ocp-Apim-Subscription-Key": key
@@ -9,40 +12,7 @@ function entire_detect_sample(endpoint: string, key: string){
   };
 
   const client = new AnomalyDetectorClient(new msRest.ApiKeyCredentials(options), endpoint);
-  const body: AnomalyDetectorModels.Request = {
-    series: [
-      { timestamp: new Date("1962-01-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1962-02-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1962-03-01T00:00:00Z"), value: 0 },
-      { timestamp: new Date("1962-04-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1962-05-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1962-06-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1962-07-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1962-08-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1962-09-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1962-10-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1962-11-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1962-12-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1963-01-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1963-02-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1963-03-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1963-04-01T00:00:00Z"), value: 0 },
-      { timestamp: new Date("1963-05-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1963-06-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1963-07-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1963-08-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1963-09-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1963-10-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1963-11-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1963-12-01T00:00:00Z"), value: 1 },
-    ],
-    granularity: "monthly",
-    customInterval: undefined,
-    period: 0,
-    maxAnomalyRatio: 0.25,
-    sensitivity: 95
-  };
-  client.entireDetect(body).then((result) => {
+  client.entireDetect(request).then((result) => {
     if(result.isAnomaly.some(function(e){return e === true;})){
       console.log("Anomaly was detected from the series at index:");
       result.isAnomaly.forEach(function(e, i){
@@ -61,7 +31,8 @@ function entire_detect_sample(endpoint: string, key: string){
   });
 }
 
-function last_detect_sample(endpoint: string, key: string){
+function last_detect_sample(endpoint: string, key: string, request: AnomalyDetectorModels.Request){
+  console.log("Sample of detecting whether the latest point in series is anomaly.");
   const options: msRest.ApiKeyCredentialOptions = {
     inHeader: {
       "Ocp-Apim-Subscription-Key": key
@@ -69,40 +40,7 @@ function last_detect_sample(endpoint: string, key: string){
   };
 
   const client = new AnomalyDetectorClient(new msRest.ApiKeyCredentials(options), endpoint);
-  const body: AnomalyDetectorModels.Request = {
-    series: [
-      { timestamp: new Date("1962-01-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1962-02-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1962-03-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1962-04-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1962-05-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1962-06-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1962-07-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1962-08-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1962-09-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1962-10-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1962-11-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1962-12-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1963-01-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1963-02-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1963-03-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1963-04-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1963-05-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1963-06-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1963-07-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1963-08-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1963-09-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1963-10-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1963-11-01T00:00:00Z"), value: 1 },
-      { timestamp: new Date("1963-12-01T00:00:00Z"), value: 0 },
-    ],
-    granularity: "monthly",
-    customInterval: undefined,
-    period: 0,
-    maxAnomalyRatio: 0.25,
-    sensitivity: 95
-  };
-  client.lastDetect(body).then((result) => {
+  client.lastDetect(request).then((result) => {
     if(result.isAnomaly){
       console.log("The latest point is detected as anomaly.");
     }else{
@@ -118,10 +56,24 @@ function last_detect_sample(endpoint: string, key: string){
   });
 }
 
+function read_series_from_file(path: string): Array<AnomalyDetectorModels.Point>{
+  let result = Array<AnomalyDetectorModels.Point>();
+  let input = fs.readFileSync(path).toString();
+  let parsed = parse(input, {skip_empty_lines:true});
+  parsed.forEach(function(e: Array<string>){
+    result.push({timestamp:new Date(e[0]), value:Number(e[1])});
+  });
+  return result;
+}
 
 const endpoint = "[YOUR_ENDPOINT_URL]";
 const key = "[YOUR_SUBSCRIPTION_KEY]";
+const path = "[PATH_TO_TIME_SERIES_DATA]";
 
-entire_detect_sample(endpoint, key);
-last_detect_sample(endpoint, key);
+const body: AnomalyDetectorModels.Request = {
+  series: read_series_from_file(path),
+  granularity: "daily",
+};
+entire_detect_sample(endpoint, key, body);
+last_detect_sample(endpoint, key, body);
 
