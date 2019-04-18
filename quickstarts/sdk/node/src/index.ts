@@ -1,7 +1,7 @@
 import * as msRest from "@azure/ms-rest-js";
 import { AnomalyDetectorClient, AnomalyDetectorModels, AnomalyDetectorMappers } from "@azure/cognitiveservices-anomalydetector";
-import * as fs from 'fs';
-import parse from 'csv-parse/lib/sync';
+import * as fs from "fs";
+import parse from "csv-parse/lib/sync";
 
 function entire_detect_sample(endpoint: string, key: string, request: AnomalyDetectorModels.Request){
   console.log("Sample of detecting anomalies in the entire series.");

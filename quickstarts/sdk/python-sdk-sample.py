@@ -38,10 +38,10 @@ def get_series_from_file(path):
     return series
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     endpoint = '[YOUR_ENDPOINT_URL]'
     key = '[YOUR_SUBSCRIPTION_KEY]'
-    path = "[PATH_TO_TIME_SERIES_DATA]"
+    path = '[PATH_TO_TIME_SERIES_DATA]'
 
     try:
         series = get_series_from_file(path)
