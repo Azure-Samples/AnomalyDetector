@@ -3,6 +3,8 @@
 namespace ConsoleApplication1
 {
     using System;
+    using System.IO;
+    using System.Linq;
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Microsoft.Azure.CognitiveServices.AnomalyDetector;
@@ -14,12 +16,13 @@ namespace ConsoleApplication1
         {
             string endpoint = "[YOUR_ENDPOINT_URL]";
             string key = "[YOUR_SUBSCRIPTION_KEY]";
+            string path = "[PATH_TO_TIME_SERIES_DATA]";
 
             // Anomaly detection samples.
             try
             {
-                EntireDetectSample.RunAsync(endpoint, key).Wait();
-                LastDetectSample.RunAsync(endpoint, key).Wait();
+                EntireDetectSampleAsync(endpoint, key, path).Wait();
+                LastDetectSampleAsync(endpoint, key, path).Wait();
             }
             catch (Exception e)
             {
@@ -29,7 +32,9 @@ namespace ConsoleApplication1
                     APIError error = ((APIErrorException)e.InnerException).Body;
                     Console.WriteLine("Error code: " + error.Code);
                     Console.WriteLine("Error message: " + error.Message);
-                } else if (e.InnerException != null) {
+                }
+                else if (e.InnerException != null)
+                {
                     Console.WriteLine(e.InnerException.Message);
                 }
             }
@@ -37,11 +42,17 @@ namespace ConsoleApplication1
             Console.WriteLine("\nPress ENTER to exit.");
             Console.ReadLine();
         }
-    }
 
-    public static class EntireDetectSample
-    {
-        public static async Task RunAsync(string endpoint, string key)
+        static List<Point> GetSeriesFromFile(string path)
+        {
+            return File.ReadAllLines(path)
+                .Where(e => e.Trim().Length != 0)
+                .Select(e => e.Split(','))
+                .Where(e => e.Length == 2)
+                .Select(e => new Point(DateTime.Parse(e[0]), Double.Parse(e[1]))).ToList();
+        }
+
+        static async Task EntireDetectSampleAsync(string endpoint, string key, string path)
         {
             Console.WriteLine("Sample of detecting anomalies in the entire series.");
 
@@ -50,38 +61,8 @@ namespace ConsoleApplication1
                 Endpoint = endpoint
             };
 
-            // Create time series
-            var series = new List<Point>{
-                new Point(DateTime.Parse("1962-01-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1962-02-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1962-03-01T00:00:00Z"), 0),
-                new Point(DateTime.Parse("1962-04-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1962-05-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1962-06-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1962-07-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1962-08-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1962-09-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1962-10-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1962-11-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1962-12-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1963-01-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1963-02-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1963-03-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1963-04-01T00:00:00Z"), 0),
-                new Point(DateTime.Parse("1963-05-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1963-06-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1963-07-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1963-08-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1963-09-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1963-10-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1963-11-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1963-12-01T00:00:00Z"), 1)
-            };
-
-            // Detection
-            Request request = new Request(series, Granularity.Monthly);
-            request.MaxAnomalyRatio = 0.25;
-            request.Sensitivity = 95;
+            List<Point> series = GetSeriesFromFile(path);
+            Request request = new Request(series, Granularity.Daily);
             EntireDetectResponse result = await client.EntireDetectAsync(request).ConfigureAwait(false);
 
             if (result.IsAnomaly.Contains(true))
@@ -102,51 +83,18 @@ namespace ConsoleApplication1
                 Console.WriteLine("There is no anomaly detected from the series.");
             }
         }
-    }
 
-    public static class LastDetectSample
-    {
-        public static async Task RunAsync(string endpoint, string key)
+        static async Task LastDetectSampleAsync(string endpoint, string key, string path)
         {
-            Console.WriteLine("Sample of detecting whether the latest point in series is anomaly.");
+            Console.WriteLine("Sample of detecting whether the latest point in series is anomaly");
 
             IAnomalyDetectorClient client = new AnomalyDetectorClient(new ApiKeyServiceClientCredentials(key))
             {
                 Endpoint = endpoint
             };
 
-            // Create time series
-            var series = new List<Point>{
-                new Point(DateTime.Parse("1962-01-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1962-02-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1962-03-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1962-04-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1962-05-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1962-06-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1962-07-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1962-08-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1962-09-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1962-10-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1962-11-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1962-12-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1963-01-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1963-02-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1963-03-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1963-04-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1963-05-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1963-06-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1963-07-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1963-08-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1963-09-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1963-10-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1963-11-01T00:00:00Z"), 1),
-                new Point(DateTime.Parse("1963-12-01T00:00:00Z"), 0)
-            };
-
-            // Detection
-            Request request = new Request(series, Granularity.Monthly);
-            request.MaxAnomalyRatio = 0.25;
-            request.Sensitivity = 95;
+            List<Point> series = GetSeriesFromFile(path);
+            Request request = new Request(series, Granularity.Daily);
             LastDetectResponse result = await client.LastDetectAsync(request).ConfigureAwait(false);
 
             if (result.IsAnomaly)
@@ -158,6 +106,5 @@ namespace ConsoleApplication1
                 Console.WriteLine("The latest point is not detected as anomaly.");
             }
         }
-
     }
 }
