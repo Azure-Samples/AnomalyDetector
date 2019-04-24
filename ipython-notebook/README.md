@@ -23,10 +23,7 @@ These python notebooks show you how to start detecting anomalies in your data wi
 
 ## Prerequisites
 
-- A [Cognitive Services API account](https://docs.microsoft.com/azure/cognitive-services/cognitive-services-apis-create-account) with access to the Anomaly Detector API. 
-
-If you don't have an Azure subscription, you can [create an account](https://azure.microsoft.com/try/cognitive-services/) for free. You can get your subscription key from the [Azure portal](https://docs.microsoft.com/en-us/azure/cognitive-services/cognitive-services-apis-create-account#access-your-resource) after creating your account, or [Azure website](https://azure.microsoft.com/try/cognitive-services/my-apis) after activating a free trial.
-
+- A [Cognitive Services API account](https://docs.microsoft.com/azure/cognitive-services/cognitive-services-apis-create-account) with access to the Anomaly Detector API. Before continuing, You will need the access key from your Azure dashboard.
 ## Running the sample
 
 You can either run this sample locally as a Jupyter notebook, or deploy it to Azure as an Azure Notebook.
