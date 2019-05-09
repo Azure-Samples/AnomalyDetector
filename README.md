@@ -8,9 +8,9 @@ products:
   - azure-cognitive-services
 ---
 
-# Anomaly Detection API Samples
+# Anomaly Detector API Samples
 
-This repository contains samples for the Anomaly Detection API, which is an [Azure Cognitive Service](https://aka.ms/anomalydetector). The Anomaly Detector API enables you to monitor and find abnormalities in your time series data by automatically identifying and applying the correct statistical models, regardless of industry, scenario, or data volume. Using your time series data, the API can find anomalies as a batch throughout your data, or determine if your latest data point is an anomaly.
+This repository contains samples for [Anomaly Detector API](https://aka.ms/anomalydetector). The Anomaly Detector API enables you to monitor and find abnormalities in your time series data by automatically identifying and applying the correct statistical models, regardless of industry, scenario, or data volume. Using your time series data, the API can find anomalies as a batch throughout your data, or determine if your latest data point is an anomaly.
 
 ## Contents
 
