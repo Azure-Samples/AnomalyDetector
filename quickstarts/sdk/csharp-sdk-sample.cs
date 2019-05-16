@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 namespace ConsoleApplication1
 {
-    // <{using-statements}>
+    // <using-statements>
     using System;
     using System.IO;
     using System.Text;
@@ -11,7 +11,7 @@ namespace ConsoleApplication1
     using System.Threading.Tasks;
     using Microsoft.Azure.CognitiveServices.AnomalyDetector;
     using Microsoft.Azure.CognitiveServices.AnomalyDetector.Models;
-    // </{using-statements}>
+    // </using-statements>
     class Program
     {
         static void Main(string[] args)
