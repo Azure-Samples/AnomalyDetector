@@ -16,7 +16,7 @@ This sample demonstrates the Anomaly Detection service's two detection methods:
 
 namespace AnomalyDetectorSample
 {
-    // <using-statements>
+    // <usingStatements>
     using System;
     using System.IO;
     using System.Text;
@@ -25,11 +25,11 @@ namespace AnomalyDetectorSample
     using System.Threading.Tasks;
     using Microsoft.Azure.CognitiveServices.AnomalyDetector;
     using Microsoft.Azure.CognitiveServices.AnomalyDetector.Models;
-    // </using-statements>
+    // </usingStatements>
 
     class Program{
 
-        // <main-method>
+        // <mainMethod>
         static void Main(string[] args){
 
             string endpoint = "[YOUR_ENDPOINT_URL]";
@@ -42,9 +42,9 @@ namespace AnomalyDetectorSample
             Console.WriteLine("\nPress ENTER to exit.");
             Console.ReadLine();
         }
-        // </main-method>
+        // </mainMethod>
 
-        // <create-client>
+        // <createClient>
         static IAnomalyDetectorClient createClient(string endpoint, string key)
         {
             IAnomalyDetectorClient client = new AnomalyDetectorClient(new ApiKeyServiceClientCredentials(key))
@@ -53,9 +53,9 @@ namespace AnomalyDetectorSample
             };
             return client;
         }
-        // </create-client>
+        // </createClient>
 
-        // <run-samples>
+        // <runSamples>
         static void runSamples(IAnomalyDetectorClient client, string dataPath)
         {
 
@@ -82,9 +82,9 @@ namespace AnomalyDetectorSample
                 }
             }
         }
-        // </run-samples>
+        // </runSamples>
 
-        // <GetSeriesFromFile()>
+        // <GetSeriesFromFile>
         static List<Point> GetSeriesFromFile(string path)
         {
             return File.ReadAllLines(path, Encoding.UTF8)
@@ -95,7 +95,7 @@ namespace AnomalyDetectorSample
         }
         // </GetSeriesFromFile()>
 
-        // <entire-dataset-example>
+        // <entireDatasetExample>
         static async Task EntireDetectSampleAsync(IAnomalyDetectorClient client, Request request)
         {
             Console.WriteLine("Detecting anomalies in the entire time series.");
@@ -120,9 +120,9 @@ namespace AnomalyDetectorSample
                 Console.WriteLine(" No anomalies detected in the series.");
             }
         }
-        // </entire-dataset-example>
+        // </entireDatasetExample>
 
-        // <latest-point-example>
+        // <latestPointExample>
         static async Task LastDetectSampleAsync(IAnomalyDetectorClient client, Request request)
         {
 
@@ -138,6 +138,6 @@ namespace AnomalyDetectorSample
                 Console.WriteLine("The latest point was not detected as an anomaly.");
             }
         }
-        // </latest-point-example>
+        // </latestPointExample>
     }
 }
