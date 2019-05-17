@@ -93,7 +93,7 @@ namespace AnomalyDetectorSample
                 .Where(e => e.Length == 2)
                 .Select(e => new Point(DateTime.Parse(e[0]), Double.Parse(e[1]))).ToList();
         }
-        // </GetSeriesFromFile()>
+        // </GetSeriesFromFile>
 
         // <entireDatasetExample>
         static async Task EntireDetectSampleAsync(IAnomalyDetectorClient client, Request request)
