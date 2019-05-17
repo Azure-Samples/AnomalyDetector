@@ -1,6 +1,20 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
-namespace ConsoleApplication1
+/*
+Copyright (c) Microsoft Corporation. All rights reserved.
+Licensed under the MIT License.
+
+
+This sample demonstrates the Anomaly Detection service's two detection methods:
+    * Anomaly detection on an entire time-series dataset.
+    * Anomaly detection on the latest data point in a dataset.
+
+ * Prerequisites:
+     * The Anomaly Detector client library for .NET
+     * A .csv file containing a time-series data set with 
+        UTC-timestamp and numerical values pairings. 
+        Example data is included in this repo.
+*/
+
+namespace AnomalyDetectorSample
 {
     // <using-statements>
     using System;
@@ -12,22 +26,46 @@ namespace ConsoleApplication1
     using Microsoft.Azure.CognitiveServices.AnomalyDetector;
     using Microsoft.Azure.CognitiveServices.AnomalyDetector.Models;
     // </using-statements>
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            string endpoint = "[YOUR_ENDPOINT_URL]";
-            string key = "[YOUR_SUBSCRIPTION_KEY]";
-            string path = "[PATH_TO_TIME_SERIES_DATA]";
 
-            // Anomaly detection samples.
+    class Program{
+
+        // <main-method>
+        static void Main(string[] args){
+
+            string endpoint = "https://westus2.api.cognitive.microsoft.com/";
+            string key = "b5893dc529264bb49185f897cd81a40b";
+            string path = @"C:\Users\aahil\Code\work\anomalydetector\example-data\request-data.csv";
+
+            IAnomalyDetectorClient client = createClient(endpoint, key);
+
+            runSamples(client, path);
+            Console.WriteLine("\nPress ENTER to exit.");
+            Console.ReadLine();
+        }
+        // </main-method>
+
+        // <create-client>
+        static IAnomalyDetectorClient createClient(string endpoint, string key)
+        {
+            IAnomalyDetectorClient client = new AnomalyDetectorClient(new ApiKeyServiceClientCredentials(key))
+            {
+                Endpoint = endpoint
+            };
+            return client;
+        }
+        // </create-client>
+
+        // <run-samples>
+        static void runSamples(IAnomalyDetectorClient client, string dataPath)
+        {
+
             try
             {
-                List<Point> series = GetSeriesFromFile(path);
+                List<Point> series = GetSeriesFromFile(dataPath);
                 Request request = new Request(series, Granularity.Daily);
 
-                EntireDetectSampleAsync(endpoint, key, request).Wait();
-                LastDetectSampleAsync(endpoint, key, request).Wait();
+                EntireDetectSampleAsync(client, request).Wait();
+                LastDetectSampleAsync(client, request).Wait();
             }
             catch (Exception e)
             {
@@ -43,11 +81,10 @@ namespace ConsoleApplication1
                     Console.WriteLine(e.InnerException.Message);
                 }
             }
-
-            Console.WriteLine("\nPress ENTER to exit.");
-            Console.ReadLine();
         }
+        // </run-samples>
 
+        // <GetSeriesFromFile()>
         static List<Point> GetSeriesFromFile(string path)
         {
             return File.ReadAllLines(path, Encoding.UTF8)
@@ -56,22 +93,18 @@ namespace ConsoleApplication1
                 .Where(e => e.Length == 2)
                 .Select(e => new Point(DateTime.Parse(e[0]), Double.Parse(e[1]))).ToList();
         }
+        // </GetSeriesFromFile()>
 
-        static async Task EntireDetectSampleAsync(string endpoint, string key, Request request)
+        // <entire-dataset-example>
+        static async Task EntireDetectSampleAsync(IAnomalyDetectorClient client, Request request)
         {
-            Console.WriteLine("Sample of detecting anomalies in the entire series.");
-
-            IAnomalyDetectorClient client = new AnomalyDetectorClient(new ApiKeyServiceClientCredentials(key))
-            {
-                Endpoint = endpoint
-            };
-
+            Console.WriteLine("Detecting anomalies in the entire time series.");
 
             EntireDetectResponse result = await client.EntireDetectAsync(request).ConfigureAwait(false);
 
             if (result.IsAnomaly.Contains(true))
             {
-                Console.WriteLine("Anomaly was detected from the series at index:");
+                Console.WriteLine("An anomaly was detected at index:");
                 for (int i = 0; i < request.Series.Count; ++i)
                 {
                     if (result.IsAnomaly[i])
@@ -84,29 +117,27 @@ namespace ConsoleApplication1
             }
             else
             {
-                Console.WriteLine("There is no anomaly detected from the series.");
+                Console.WriteLine(" No anomalies detected in the series.");
             }
         }
+        // </entire-dataset-example>
 
-        static async Task LastDetectSampleAsync(string endpoint, string key, Request request)
+        // <latest-point-example>
+        static async Task LastDetectSampleAsync(IAnomalyDetectorClient client, Request request)
         {
-            Console.WriteLine("Sample of detecting whether the latest point in series is anomaly.");
 
-            IAnomalyDetectorClient client = new AnomalyDetectorClient(new ApiKeyServiceClientCredentials(key))
-            {
-                Endpoint = endpoint
-            };
-
+            Console.WriteLine("Detecting the anomaly status of the latest point in the series.");
             LastDetectResponse result = await client.LastDetectAsync(request).ConfigureAwait(false);
 
             if (result.IsAnomaly)
             {
-                Console.WriteLine("The latest point is detected as anomaly.");
+                Console.WriteLine("The latest point was not detected as an anomaly.");
             }
             else
             {
-                Console.WriteLine("The latest point is not detected as anomaly.");
+                Console.WriteLine("The latest point was not detected as an anomaly.");
             }
         }
+        // </latest-point-example>
     }
 }
