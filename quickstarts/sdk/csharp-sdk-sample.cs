@@ -32,9 +32,9 @@ namespace AnomalyDetectorSample
         // <main-method>
         static void Main(string[] args){
 
-            string endpoint = "https://westus2.api.cognitive.microsoft.com/";
-            string key = "b5893dc529264bb49185f897cd81a40b";
-            string path = @"C:\Users\aahil\Code\work\anomalydetector\example-data\request-data.csv";
+            string endpoint = "[YOUR_ENDPOINT_URL]";
+            string key = "[YOUR_SUBSCRIPTION_KEY]";
+            string path = "[PATH_TO_TIME_SERIES_DATA]";
 
             IAnomalyDetectorClient client = createClient(endpoint, key);
 
