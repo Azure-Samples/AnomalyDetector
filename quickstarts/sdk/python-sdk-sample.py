@@ -25,7 +25,7 @@ import os
 # Set the COGSRV_ACCOUNT_KEY environment variable on your local machine using the
 # appropriate method for your preferred shell (Bash, PowerShell, Command Prompt, etc.)
 SUBSCRIPTION_KEY = os.environ["COGSRV_ACCOUNT_KEY"]
-ANOMALY_DETECTION_LOCATION = "westus2" #eastus?
+ANOMALY_DETECTION_LOCATION = "westus2"
 TIME_SERIES_DATA_PATH = ""
 # </initVars>
 
