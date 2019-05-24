@@ -38,8 +38,7 @@ namespace AnomalyDetectorSample
 
             IAnomalyDetectorClient client = createClient(endpoint, key); //Anomaly Detector client
 
-            List<Point> series = GetSeriesFromFile(dataPath); // Data points from the data file
-            Request request = new Request(series, Granularity.Daily); // The request payload
+            request request = GetSeriesFromFile(datapath); // The request payload with points from the data file
 
             EntireDetectSampleAsync(client, request).Wait(); // Async method for batch anomaly detection
             LastDetectSampleAsync(client, request).Wait(); // Async method for analyzing the latest data point in the set
@@ -91,13 +90,15 @@ namespace AnomalyDetectorSample
         // </runSamplesHelper>
 
         // <GetSeriesFromFile>
-        static List<Point> GetSeriesFromFile(string path)
+        static Request GetSeriesFromFile(string path)
         {
-            return File.ReadAllLines(path, Encoding.UTF8)
+            List<Point> list = File.ReadAllLines(path, Encoding.UTF8)
                 .Where(e => e.Trim().Length != 0)
                 .Select(e => e.Split(','))
                 .Where(e => e.Length == 2)
                 .Select(e => new Point(DateTime.Parse(e[0]), Double.Parse(e[1]))).ToList();
+            
+            return new Request(series, Granularity.Daily); 
         }
         // </GetSeriesFromFile>
 
