@@ -138,7 +138,7 @@ namespace AnomalyDetectorSample
 
             if (result.IsAnomaly)
             {
-                Console.WriteLine("The latest point was not detected as an anomaly.");
+                Console.WriteLine("The latest point was detected as an anomaly.");
             }
             else
             {
