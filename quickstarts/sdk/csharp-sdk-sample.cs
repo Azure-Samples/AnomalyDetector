@@ -36,9 +36,14 @@ namespace AnomalyDetectorSample
             string key = "[YOUR_SUBSCRIPTION_KEY]";
             string path = "[PATH_TO_TIME_SERIES_DATA]";
 
-            IAnomalyDetectorClient client = createClient(endpoint, key);
+            IAnomalyDetectorClient client = createClient(endpoint, key); //Anomaly Detector client
 
-            runSamples(client, path);
+            List<Point> series = GetSeriesFromFile(dataPath); // Data points from the data file
+            Request request = new Request(series, Granularity.Daily); // The request payload
+
+            EntireDetectSampleAsync(client, request).Wait(); // Async method for batch anomaly detection
+            LastDetectSampleAsync(client, request).Wait(); // Async method for analyzing the latest data point in the set
+
             Console.WriteLine("\nPress ENTER to exit.");
             Console.ReadLine();
         }
@@ -55,7 +60,8 @@ namespace AnomalyDetectorSample
         }
         // </createClient>
 
-        // <runSamples>
+        // <runSamplesHelper>
+        //Run the anomaly detection examples with extra error handling
         static void runSamples(IAnomalyDetectorClient client, string dataPath)
         {
 
@@ -82,7 +88,7 @@ namespace AnomalyDetectorSample
                 }
             }
         }
-        // </runSamples>
+        // </runSamplesHelper>
 
         // <GetSeriesFromFile>
         static List<Point> GetSeriesFromFile(string path)
