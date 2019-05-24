@@ -31,8 +31,8 @@ namespace AnomalyDetectorSample
 
         // <mainMethod>
         static void Main(string[] args){
-
-            string endpoint = "[YOUR_ENDPOINT_URL]";
+            string location = "westus2";
+            string endpoint = $"https://{location}.api.cognitive.microsoft.com";
             string key = "[YOUR_SUBSCRIPTION_KEY]";
             string path = "[PATH_TO_TIME_SERIES_DATA]";
 
