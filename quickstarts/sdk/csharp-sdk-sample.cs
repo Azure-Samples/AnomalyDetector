@@ -33,7 +33,8 @@ namespace AnomalyDetectorSample
         static void Main(string[] args){
             string location = "westus2";
             string endpoint = $"https://{location}.api.cognitive.microsoft.com";
-            string key = "[YOUR_SUBSCRIPTION_KEY]";
+            //This sample assumes you have created an environment variable for your key, named ANOMALY_DETECTOR_KEY
+            string key = Environment.GetEnvironmentVariable("ANOMALY_DETECTOR_KEY");
             string path = "[PATH_TO_TIME_SERIES_DATA]";
 
             IAnomalyDetectorClient client = createClient(endpoint, key); //Anomaly Detector client
