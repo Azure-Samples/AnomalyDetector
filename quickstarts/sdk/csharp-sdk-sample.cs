@@ -35,11 +35,11 @@ namespace AnomalyDetectorSample
             string endpoint = $"https://{location}.api.cognitive.microsoft.com";
             //This sample assumes you have created an environment variable for your key, named ANOMALY_DETECTOR_KEY
             string key = Environment.GetEnvironmentVariable("ANOMALY_DETECTOR_KEY");
-            string path = "[PATH_TO_TIME_SERIES_DATA]";
+            string datapath = "request-data.csv";
 
             IAnomalyDetectorClient client = createClient(endpoint, key); //Anomaly Detector client
 
-            request request = GetSeriesFromFile(datapath); // The request payload with points from the data file
+            Request request = GetSeriesFromFile(datapath); // The request payload with points from the data file
 
             EntireDetectSampleAsync(client, request).Wait(); // Async method for batch anomaly detection
             LastDetectSampleAsync(client, request).Wait(); // Async method for analyzing the latest data point in the set
