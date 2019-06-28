@@ -26,7 +26,7 @@ import os
 # appropriate method for your preferred shell (Bash, PowerShell, Command Prompt, etc.)
 SUBSCRIPTION_KEY = os.environ["ANOMALY_DETECTOR_KEY"]
 ANOMALY_DETECTION_LOCATION = "westus2"
-TIME_SERIES_DATA_PATH = ""
+TIME_SERIES_DATA_PATH = "request-data.csv"
 # </initVars>
 
 # Create an Anomaly Detector client and add the 
