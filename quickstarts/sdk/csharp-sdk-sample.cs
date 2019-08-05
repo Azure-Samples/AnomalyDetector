@@ -93,7 +93,7 @@ namespace AnomalyDetectorSample
         // <GetSeriesFromFile>
         static Request GetSeriesFromFile(string path)
         {
-            List<Point> series = File.ReadAllLines(path, Encoding.UTF8)
+            List<Point> list = File.ReadAllLines(path, Encoding.UTF8)
                 .Where(e => e.Trim().Length != 0)
                 .Select(e => e.Split(','))
                 .Where(e => e.Length == 2)
