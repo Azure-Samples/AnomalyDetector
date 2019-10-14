@@ -22,18 +22,17 @@ import os
 # </imports>
 
 # <initVars>
-# Set the COGSRV_ACCOUNT_KEY environment variable on your local machine using the
-# appropriate method for your preferred shell (Bash, PowerShell, Command Prompt, etc.)
+# This sample assumes you have created an environment variable for your key and endpoint
 SUBSCRIPTION_KEY = os.environ["ANOMALY_DETECTOR_KEY"]
-ANOMALY_DETECTION_LOCATION = "westus2"
+ANOMALY_DETECTOR_ENDPOINT = os.environ["ANOMALY_DETECTOR_ENDPOINT"]
+
 TIME_SERIES_DATA_PATH = "request-data.csv"
 # </initVars>
 
 # Create an Anomaly Detector client and add the 
 
 # <client>
-base_url = "https://{}.api.cognitive.microsoft.com".format(ANOMALY_DETECTION_LOCATION)
-client = AnomalyDetectorClient(base_url, CognitiveServicesCredentials(SUBSCRIPTION_KEY))
+client = AnomalyDetectorClient(ANOMALY_DETECTOR_ENDPOINT, CognitiveServicesCredentials(SUBSCRIPTION_KEY))
 # </client>
 
 # Load in the time series data file

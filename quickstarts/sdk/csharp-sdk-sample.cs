@@ -31,9 +31,8 @@ namespace AnomalyDetectorSample
 
         // <mainMethod>
         static void Main(string[] args){
-            string location = "westus2";
-            string endpoint = $"https://{location}.api.cognitive.microsoft.com";
-            //This sample assumes you have created an environment variable for your key, named ANOMALY_DETECTOR_KEY
+            //This sample assumes you have created an environment variable for your key and endpoint
+            string endpoint = Environment.GetEnvironmentVariable(ANOMALY_DETECTOR_ENDPOINT);
             string key = Environment.GetEnvironmentVariable("ANOMALY_DETECTOR_KEY");
             string datapath = "request-data.csv";
 
