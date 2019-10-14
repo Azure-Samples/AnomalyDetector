@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
-
+// <imports>
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -14,15 +14,13 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+// </imports>
 
 public class JavaDetect {
-
-    // Replace the subscriptionKey string value with your valid subscription key.
-    static final String subscriptionKey = "[YOUR_SUBSCRIPTION_KEY]";
-
-    //replace the endpoint URL with the correct one for your subscription. Your endpoint can be found in the Azure portal.
-    //for example: https://westus2.api.cognitive.microsoft.com
-    static final String endpoint = "[YOUR_ENDPOINT_URL]";
+    // <vars>
+    // This sample assumes you have created an environment variable for your key and endpoint
+    static final String subscriptionKey = System.getenv("ANOMALY_DETECTOR_KEY");
+    static final String endpoint = System.getenv("ANOMALY_DETECTOR_ENDPOINT");
 
     // Replace the dataPath string with a path to the JSON formatted time series data.
     static final String dataPath = "[PATH_TO_TIME_SERIES_DATA]";
@@ -32,8 +30,8 @@ public class JavaDetect {
     // The latest data point in the time series
     static final String latestPointDetectionUrl = "/anomalydetector/v1.0/timeseries/last/detect";
     static final String batchDetectionUrl = "/anomalydetector/v1.0/timeseries/entire/detect";
-
-
+    // </vars>
+    // <main>
     public static void main(String[] args) throws Exception {
 
         String requestData = new String(Files.readAllBytes(Paths.get(dataPath)), "utf-8");
@@ -41,7 +39,8 @@ public class JavaDetect {
         detectAnomaliesBatch(requestData);
         detectAnomaliesLatest(requestData);
     }
-
+    // </main>
+    // <detectBatch>
     static void detectAnomaliesBatch(String requestData) {
         System.out.println("Detecting anomalies as a batch");
 
@@ -63,13 +62,15 @@ public class JavaDetect {
             }
         }
     }
-
+    // </detectBatch>
+    // <detectLatest>
     static void detectAnomaliesLatest(String requestData) {
         System.out.println("Determining if latest data point is an anomaly");
         String result = sendRequest(latestPointDetectionUrl, endpoint, subscriptionKey, requestData);
         System.out.println(result);
     }
-
+    // </detectLatest>
+    // <request>
     static String sendRequest(String apiAddress, String endpoint, String subscriptionKey, String requestData) {
         try (CloseableHttpClient client = HttpClients.createDefault()) {
             HttpPost request = new HttpPost(endpoint + apiAddress);
@@ -91,4 +92,5 @@ public class JavaDetect {
         }
         return null;
     }
+    // <request>
 }

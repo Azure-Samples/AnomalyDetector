@@ -1,5 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
+// <usingStatements>
 using System;
 using System.IO;
 using System.Net;
@@ -7,12 +8,13 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+// </usingStatements>
 
 namespace Console
 {
     class Program
     {
-
+        // <vars>
         // Replace the subscriptionKey string with your valid subscription key.
         static readonly string subscriptionKey = Environment.GetEnvironmentVariable("ANOMALY_DETECTOR_KEY");
         static readonly string endpoint = Environment.GetEnvironmentVariable("ANOMALY_DETECTOR_ENDPOINT");
@@ -20,13 +22,11 @@ namespace Console
         // Replace the dataPath string with a path to the JSON formatted time series data.
         const string dataPath = "[PATH_TO_TIME_SERIES_DATA]";
 
-        // Urls for anomaly detection on:
-        // A batch of data points, or
-        // The latest data point in the time series
         const string latestPointDetectionUrl = "/anomalydetector/v1.0/timeseries/last/detect";
         const string batchDetectionUrl = "/anomalydetector/v1.0/timeseries/entire/detect";
+        // </vars>
 
-
+        // <main>
         static void Main(string[] args)
         {
             //read in the JSON time series data for the API request
@@ -37,7 +37,8 @@ namespace Console
             System.Console.WriteLine("\nPress any key to exit ");
             System.Console.ReadKey();
         }
-
+        // </main>
+        // <detectAnomaliesBatch>
         static void detectAnomaliesBatch(string requestData)
         {
             System.Console.WriteLine("Detecting anomalies as a batch");
@@ -71,7 +72,8 @@ namespace Console
                 }
             }
         }
-
+        // </detectAnomaliesBatch>
+        // <detectAnomaliesLatest>
         static void detectAnomaliesLatest(string requestData)
         {
             System.Console.WriteLine("\n\nDetermining if latest data point is an anomaly");
@@ -86,6 +88,7 @@ namespace Console
             dynamic jsonObj = Newtonsoft.Json.JsonConvert.DeserializeObject(result);
             System.Console.WriteLine(jsonObj);
         }
+        // </detectAnomaliesLatest>
 
         /// <summary>
         /// Sends a request to the Anomaly Detection API to detect anomaly points
@@ -95,6 +98,7 @@ namespace Console
         /// <param name="subscriptionKey">The subscription key applied  </param>
         /// <param name="requestData">The JSON string for requet data points</param>
         /// <returns>The JSON string for anomaly points and expected values.</returns>
+        // <requestMethod>
         static async Task<string> Request(string apiAddress, string endpoint, string subscriptionKey, string requestData)
         {
             using (HttpClient client = new HttpClient { BaseAddress = new Uri(apiAddress) })
@@ -108,5 +112,6 @@ namespace Console
                 return await res.Content.ReadAsStringAsync();
             }
         }
+        // </requestMethod>
     }
 }
