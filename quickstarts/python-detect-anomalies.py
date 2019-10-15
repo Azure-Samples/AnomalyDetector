@@ -1,6 +1,7 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License.
 # <imports>
+import os
 import requests
 import json
 # </imports>
@@ -63,7 +64,8 @@ def detect_latest(request_data):
 # <fileLoad>
 file_handler = open(data_location)
 json_data = json.load(file_handler)
+# </fileLoad>
+# <methodCalls>
 detect_batch(json_data)
 detect_latest(json_data)
-# </fileLoad>
-
+# </methodCalls>
