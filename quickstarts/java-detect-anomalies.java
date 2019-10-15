@@ -92,5 +92,5 @@ public class JavaDetect {
         }
         return null;
     }
-    // <request>
+    // </request>
 }
