@@ -15,7 +15,7 @@ namespace Console
     class Program
     {
         // <vars>
-        // Replace the subscriptionKey string with your valid subscription key.
+        //This sample assumes you have created an environment variable for your key and endpoint
         static readonly string subscriptionKey = Environment.GetEnvironmentVariable("ANOMALY_DETECTOR_KEY");
         static readonly string endpoint = Environment.GetEnvironmentVariable("ANOMALY_DETECTOR_ENDPOINT");
 
