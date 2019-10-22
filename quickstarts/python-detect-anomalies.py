@@ -38,7 +38,7 @@ def detect_batch(request_data):
     result = send_request(endpoint, batch_detection_url, subscription_key, request_data)
     print(json.dumps(result, indent=4))
 
-    if result.get('code') != None:
+    if result.get('code') is not None:
         print("Detection failed. ErrorCode:{}, ErrorMessage:{}".format(result['code'], result['message']))
     else:
         # Find and display the positions of anomalies in the data set
@@ -46,8 +46,8 @@ def detect_batch(request_data):
         print("Anomalies detected in the following data positions:")
 
         for x in range(len(anomalies)):
-            if anomalies[x] == True:
-                print (x)
+            if anomalies[x]:
+                print (x, request_data['series'][x]['value'])
 # </detectBatch>
 """
 Detect if the latest data point in the time series is an anomaly.
