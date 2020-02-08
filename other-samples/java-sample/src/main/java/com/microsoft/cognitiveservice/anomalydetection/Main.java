@@ -18,13 +18,13 @@ public class Main {
     // **********************************************
 
     // Replace the subscriptionKey string value with your valid subscription key.
-    private static final String subscriptionKey = "<Subscription Key>";
+    private static final String subscriptionKey = "accf4775-6f1f-4382-9f89-64a8658f02ba";
 
     // Choose which anomaly detection way you want to use and change the uriBase's second part
-    private static final String rootUrl = "https://westus2.api.cognitive.microsoft.com/anomalydetector/v1.0";
+    private static final String rootUrl = "http://localhost:5000/anomalydetector/v1.0";
     private static final String lastDetect = "/timeseries/last/detect";
     private static final String entireDetect = "/timeseries/entire/detect";
-    private static final String uriBase = rootUrl + lastDetect;
+    private static final String uriBase = rootUrl + entireDetect;
 
     public static void main(String[] args) throws FileNotFoundException  {
         String resourceName = "/request-data.json";
