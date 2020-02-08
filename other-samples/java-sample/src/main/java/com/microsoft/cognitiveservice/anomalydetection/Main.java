@@ -24,7 +24,7 @@ public class Main {
     private static final String rootUrl = "https://westus2.api.cognitive.microsoft.com/anomalydetector/v1.0";
     private static final String lastDetect = "/timeseries/last/detect";
     private static final String entireDetect = "/timeseries/entire/detect";
-    private static final String uriBase = rootUrl + lastDetect;
+    private static final String uriBase = rootUrl + entireDetect;
 
     public static void main(String[] args) throws FileNotFoundException  {
         String resourceName = "/request-data.json";
