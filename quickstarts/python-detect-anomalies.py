@@ -9,6 +9,7 @@ import json
 # URLs for anomaly detection with the Anomaly Detector API
 batch_detection_url = "/anomalydetector/v1.0/timeseries/entire/detect"
 latest_point_detection_url = "/anomalydetector/v1.0/timeseries/last/detect"
+change_point_detection_url = "/anomalydetector/v1.0/timeseries/changepoint/detect"
 
 # This sample assumes you have created an environment variable for your key and endpoint
 endpoint = os.environ["ANOMALY_DETECTOR_ENDPOINT"]
@@ -59,6 +60,16 @@ def detect_latest(request_data):
     result = send_request(endpoint, latest_point_detection_url, subscription_key, request_data)
     print(json.dumps(result, indent=4))
 # </detectLatest>
+"""
+Detect change point.
+"""
+# <detectChangePoint>
+def detect_change_point(request_data):
+    print("Detecting change point")
+    # send the request, and print the JSON result
+    result = send_request(endpoint, change_point_detection_url, subscription_key, request_data)
+    print(json.dumps(result, indent=4))
+# </detectChangePoint>
 
 # read json time series data from file
 # <fileLoad>
@@ -68,4 +79,5 @@ json_data = json.load(file_handler)
 # <methodCalls>
 detect_batch(json_data)
 detect_latest(json_data)
+detect_change_point(json_data)
 # </methodCalls>
