@@ -30,6 +30,7 @@ public class JavaDetect {
     // The latest data point in the time series
     static final String latestPointDetectionUrl = "/anomalydetector/v1.0/timeseries/last/detect";
     static final String batchDetectionUrl = "/anomalydetector/v1.0/timeseries/entire/detect";
+    static final String changePointDetectionUrl = "/anomalydetector/v1.0/timeseries/changepoint/detect";
     // </vars>
     // <main>
     public static void main(String[] args) throws Exception {
@@ -38,6 +39,7 @@ public class JavaDetect {
 
         detectAnomaliesBatch(requestData);
         detectAnomaliesLatest(requestData);
+        detectChangePoints(requestData);
     }
     // </main>
     // <detectBatch>
@@ -70,6 +72,29 @@ public class JavaDetect {
         System.out.println(result);
     }
     // </detectLatest>
+    // <detectChangePoint>
+    static void detectChangePoints(String requestData) {
+        System.out.println("Detecting change points");
+
+        String result = sendRequest(changePointDetectionUrl, endpoint, subscriptionKey, requestData);
+        if (result != null) {
+            System.out.println(result);
+
+            JSONObject jsonObj = new JSONObject(result);
+            if (jsonObj.has("code")) {
+                System.out.println(String.format("Detection failed. ErrorCode:%s, ErrorMessage:%s", jsonObj.getString("code"), jsonObj.getString("message")));
+            } else {
+                JSONArray jsonArray = jsonObj.getJSONArray("isChangePoint");
+                System.out.println("Change points found in the following data positions:");
+                for (int i = 0; i < jsonArray.length(); ++i) {
+                    if (jsonArray.getBoolean(i))
+                        System.out.print(i + ", ");
+                }
+                System.out.println();
+            }
+        }
+    }
+    // </detectChangePoint>
     // <request>
     static String sendRequest(String apiAddress, String endpoint, String subscriptionKey, String requestData) {
         try (CloseableHttpClient client = HttpClients.createDefault()) {
