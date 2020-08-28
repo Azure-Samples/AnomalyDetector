@@ -69,6 +69,17 @@ def detect_change_point(request_data):
     # send the request, and print the JSON result
     result = send_request(endpoint, change_point_detection_url, subscription_key, request_data)
     print(json.dumps(result, indent=4))
+
+    if result.get('code') is not None:
+        print("Detection failed. ErrorCode:{}, ErrorMessage:{}".format(result['code'], result['message']))
+    else:
+        # Find and display the positions of changePoint in the data set
+        change_points = result["isChangePoint"]
+        print("changePoints detected in the following data positions:")
+
+        for x in range(len(change_points)):
+            if change_points[x]:
+                print(x, request_data['series'][x]['value'])
 # </detectChangePoint>
 
 # read json time series data from file
