@@ -34,6 +34,7 @@ namespace Console
 
             detectAnomaliesBatch(requestData);
             detectAnomaliesLatest(requestData);
+            detectChangePoints(requestData);
             System.Console.WriteLine("\nPress any key to exit ");
             System.Console.ReadKey();
         }
@@ -89,6 +90,23 @@ namespace Console
             System.Console.WriteLine(jsonObj);
         }
         // </detectAnomaliesLatest>
+
+        // <detectChangePoints>
+        static void detectChangePoints(string requestData)
+        {
+            System.Console.WriteLine("\n\nDetecting change points in the series.");
+            //construct the request
+            var result = Request(
+                endpoint,
+                changePointDetectionUrl,
+                subscriptionKey,
+                requestData).Result;
+
+            //deserialize the JSON object, and display it
+            dynamic jsonObj = Newtonsoft.Json.JsonConvert.DeserializeObject(result);
+            System.Console.WriteLine(jsonObj);
+        }
+        // </detectChangePoints>
 
         /// <summary>
         /// Sends a request to the Anomaly Detection API to detect anomaly points
