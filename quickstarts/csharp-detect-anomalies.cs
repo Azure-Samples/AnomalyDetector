@@ -105,6 +105,24 @@ namespace Console
             //deserialize the JSON object, and display it
             dynamic jsonObj = Newtonsoft.Json.JsonConvert.DeserializeObject(result);
             System.Console.WriteLine(jsonObj);
+
+            if (jsonObj["code"] != null)
+            {
+                System.Console.WriteLine($"Detection failed. ErrorCode:{jsonObj["code"]}, ErrorMessage:{jsonObj["message"]}");
+            }
+            else
+            {
+                //Find and display the positions of anomalies in the data set
+                bool[] anomalies = jsonObj["isChangePoint"].ToObject<bool[]>();
+                System.Console.WriteLine("\Change points detected in the following data positions:");
+                for (var i = 0; i < anomalies.Length; i++)
+                {
+                    if (anomalies[i])
+                    {
+                        System.Console.Write(i + ", ");
+                    }
+                }
+            }
         }
         // </detectChangePoints>
 
