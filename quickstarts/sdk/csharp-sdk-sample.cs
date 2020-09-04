@@ -42,6 +42,7 @@ namespace AnomalyDetectorSample
 
             EntireDetectSampleAsync(client, request).Wait(); // Async method for batch anomaly detection
             LastDetectSampleAsync(client, request).Wait(); // Async method for analyzing the latest data point in the set
+            DetectChangePoint(client, request).Wait(); // Async method for change point detection
 
             Console.WriteLine("\nPress ENTER to exit.");
             Console.ReadLine();
@@ -146,5 +147,32 @@ namespace AnomalyDetectorSample
             }
         }
         // </latestPointExample>
+
+        // <changePointExample>
+        public async Task DetectChangePoint(IAnomalyDetectorClient client, Request request)
+        {
+            Console.WriteLine("Detecting the change points in the series.");
+
+            ChangePointDetectResponse result = await client.DetectChangePointAsync(request).ConfigureAwait(false);
+
+            if (result.IsChangePoint.Contains(true))
+            {
+                Console.WriteLine("A change point was detected at index:");
+                for (int i = 0; i < request.Series.Count; ++i)
+                {
+                    if (result.IsChangePoint[i])
+                    {
+                        Console.Write(i);
+                        Console.Write(" ");
+                    }
+                }
+                Console.WriteLine();
+            }
+            else
+            {
+                Console.WriteLine("No change point detected in the series.");
+            }
+        }
+        // </changePointExample>
     }
 }
