@@ -93,3 +93,25 @@ if response.is_anomaly:
 else:
     print('The latest point is not detected as anomaly.')
 # </latestPointDetection>
+
+# Detect change points
+
+# <changePointDetection>
+
+print('Detecting change points in the entire time series.')
+
+try:
+    response = client.detect_change_point(request)
+except AnomalyDetectorError as e:
+    print('Error code: {}'.format(e.error.code), 'Error message: {}'.format(e.error.message))
+except Exception as e:
+     print(e)
+
+if any(response.is_change_point):
+    print('An change point was detected at index:')
+    for i, value in enumerate(response.is_change_point):
+        if value:
+            print(i)
+else:
+    print('No change point were detected in the time series.')
+# </changePointDetection>
