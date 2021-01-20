@@ -48,6 +48,7 @@ public class Main {
             new HttpPipelineBuilder().policies(authPolicy, addHeadersPolicy).build();
 
     public static void main(String[] args) throws IOException {
+
         AnomalyDetectorAsyncClient asyncClient = new AnomalyDetectorClientBuilder()
                 .endpoint(END_POINT).pipeline(httpPipeline).buildAsyncClient();
 
@@ -63,40 +64,42 @@ public class Main {
         DetectRequest request = new DetectRequest()
                 .setGranularity(TimeGranularity.fromString(requestData.granularity()))
                 .setSeries(timeSeriesPointList);
-        Response<LastDetectResponse> response = asyncClient.detectLastPointWithResponse(request).block();
-        System.out.println("Request detail information...................................");
-        System.out.println("**************************************************************");
-        System.out.println(String.format("Request url is : %s", response.getRequest().getUrl().toString()));
-        response.getRequest().getHeaders().forEach(httpHeader -> {
+
+        asyncClient.detectLastPointWithResponse(request).subscribe(response -> {
+            System.out.println("Request detail information...................................");
             System.out.println("**************************************************************");
-            System.out.println(String.format("Request httpHeader name is : %s", httpHeader.getName()));
-            System.out.println(String.format("Request httpHeader Value is : %s", httpHeader.getValue()));
-        });
-        response.getRequest().getBody().subscribe(byteBuffer -> {
+            System.out.println(String.format("Request url is : %s", response.getRequest().getUrl().toString()));
+            response.getRequest().getHeaders().forEach(httpHeader -> {
+                System.out.println("**************************************************************");
+                System.out.println(String.format("Request httpHeader name is : %s", httpHeader.getName()));
+                System.out.println(String.format("Request httpHeader Value is : %s", httpHeader.getValue()));
+            });
+            response.getRequest().getBody().subscribe(byteBuffer -> {
+                System.out.println("**************************************************************");
+                Charset charset = Charset.forName("UTF-8");
+                CharsetDecoder decoder = charset.newDecoder();
+                try {
+                    CharBuffer charBuffer = decoder.decode(byteBuffer.asReadOnlyBuffer());
+                    System.out.println(String.format("Request body is : %s", charBuffer.toString()));
+                } catch (CharacterCodingException e) {
+                    e.printStackTrace();
+                }
+            });
+            System.out.println("Response detail information...................................");
             System.out.println("**************************************************************");
-            Charset charset = Charset.forName("UTF-8");
-            CharsetDecoder decoder = charset.newDecoder();
-            try {
-                CharBuffer charBuffer = decoder.decode(byteBuffer.asReadOnlyBuffer());
-                System.out.println(String.format("Request body is : %s", charBuffer.toString()));
-            } catch (CharacterCodingException e) {
-                e.printStackTrace();
-            }
-        });
-        System.out.println("Response detail information...................................");
-        System.out.println("**************************************************************");
-        System.out.println(String.format("Status code is : %s", response.getStatusCode()));
-        response.getHeaders().stream().forEach(httpHeader -> {
+            System.out.println(String.format("Status code is : %s", response.getStatusCode()));
+            response.getHeaders().stream().forEach(httpHeader -> {
+                System.out.println("**************************************************************");
+                System.out.println(String.format("Response httpHeader name is : %s", httpHeader.getName()));
+                System.out.println(String.format("Response httpHeader Value is : %s", httpHeader.getValue()));
+            });
             System.out.println("**************************************************************");
-            System.out.println(String.format("Response httpHeader name is : %s", httpHeader.getName()));
-            System.out.println(String.format("Response httpHeader Value is : %s", httpHeader.getValue()));
+            System.out.println(String.format("Expected value is : %s, Period is : %s, Lower margin is : %s, Upper margin : %s, Suggested window is : %s",
+                    response.getValue().getExpectedValue(),
+                    response.getValue().getPeriod(),
+                    response.getValue().getLowerMargin(),
+                    response.getValue().getUpperMargin(),
+                    response.getValue().getSuggestedWindow()));
         });
-        System.out.println("**************************************************************");
-        System.out.println(String.format("Expected value is : %s, Period is : %s, Lower margin is : %s, Upper margin : %s, Suggested window is : %s",
-                response.getValue().getExpectedValue(),
-                response.getValue().getPeriod(),
-                response.getValue().getLowerMargin(),
-                response.getValue().getUpperMargin(),
-                response.getValue().getSuggestedWindow()));
     }
 }
