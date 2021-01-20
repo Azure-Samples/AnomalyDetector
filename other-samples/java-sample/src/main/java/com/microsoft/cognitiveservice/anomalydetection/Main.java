@@ -1,16 +1,29 @@
 package com.microsoft.cognitiveservice.anomalydetection;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONObject;
-import org.json.JSONTokener;
+import com.azure.ai.anomalydetector.AnomalyDetectorAsyncClient;
+import com.azure.ai.anomalydetector.AnomalyDetectorClientBuilder;
+import com.azure.ai.anomalydetector.models.*;
+import com.azure.core.credential.AzureKeyCredential;
+import com.azure.core.http.HttpHeaders;
+import com.azure.core.http.HttpPipeline;
+import com.azure.core.http.HttpPipelineBuilder;
+import com.azure.core.http.policy.AddHeadersPolicy;
+import com.azure.core.http.policy.AzureKeyCredentialPolicy;
+import com.azure.core.http.policy.HttpPipelinePolicy;
+import com.azure.core.http.rest.Response;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 
-import java.io.*;
+import java.io.IOException;
+import java.nio.CharBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
     // **********************************************
@@ -20,57 +33,70 @@ public class Main {
     // Replace the subscriptionKey string value with your valid subscription key.
     private static final String subscriptionKey = "<Subscription Key>";
 
-    // Choose which anomaly detection way you want to use and change the uriBase's second part
-    private static final String rootUrl = "https://westus2.api.cognitive.microsoft.com/anomalydetector/v1.0";
-    private static final String lastDetect = "/timeseries/last/detect";
-    private static final String entireDetect = "/timeseries/entire/detect";
-    private static final String uriBase = rootUrl + lastDetect;
+    private static final String END_POINT = "<Anomaly Detector End Point>";
 
-    public static void main(String[] args) throws FileNotFoundException  {
-        String resourceName = "/request-data.json";
-        InputStream is = Main.class.getResourceAsStream(resourceName);
-        if (is == null) {
-            throw new NullPointerException("Cannot find resource file " + resourceName);
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().registerModule(new Jdk8Module());
+
+    private static final HttpPipelinePolicy authPolicy =
+            new AzureKeyCredentialPolicy("Ocp-Apim-Subscription-Key",
+                    new AzureKeyCredential(subscriptionKey));
+
+    private static final AddHeadersPolicy addHeadersPolicy =
+            new AddHeadersPolicy(new HttpHeaders().put("Content-Type", "application/json"));
+
+    private static final HttpPipeline httpPipeline =
+            new HttpPipelineBuilder().policies(authPolicy, addHeadersPolicy).build();
+
+    public static void main(String[] args) throws IOException {
+        AnomalyDetectorAsyncClient asyncClient = new AnomalyDetectorClientBuilder()
+                .endpoint(END_POINT).pipeline(httpPipeline).buildAsyncClient();
+
+        RequestData requestData = OBJECT_MAPPER.readValue(Main.class.getResource("/request-data.json"), RequestData.class);
+        List<TimeSeriesPoint> timeSeriesPointList = new ArrayList<TimeSeriesPoint>();
+        for (Series series : requestData.series()) {
+            TimeSeriesPoint timeSeriesPoint = new TimeSeriesPoint()
+                    .setTimestamp(OffsetDateTime.ofInstant(Instant.parse(series.timestamp()), ZoneOffset.UTC))
+                    .setValue(series.value().floatValue());
+            timeSeriesPointList.add(timeSeriesPoint);
         }
-        JSONTokener tokener = new JSONTokener(is);
-        String content = new JSONObject(tokener).toString();
-        CloseableHttpClient client = HttpClients.createDefault();
-        HttpPost request = new HttpPost(uriBase);
 
-        // Request headers.
-        request.setHeader("Content-Type", "application/json");
-        request.setHeader("Ocp-Apim-Subscription-Key", subscriptionKey);
-
-        try {
-            StringEntity params = new StringEntity(content);
-            request.setEntity(params);
-
-            CloseableHttpResponse response = client.execute(request);
+        DetectRequest request = new DetectRequest()
+                .setGranularity(TimeGranularity.fromString(requestData.granularity()))
+                .setSeries(timeSeriesPointList);
+        Response<LastDetectResponse> response = asyncClient.detectLastPointWithResponse(request).block();
+        System.out.println("Request detail information...................................");
+        System.out.println("**************************************************************");
+        System.out.println(String.format("Request url is : %s", response.getRequest().getUrl().toString()));
+        response.getRequest().getHeaders().forEach(httpHeader -> {
+            System.out.println("**************************************************************");
+            System.out.println(String.format("Request httpHeader name is : %s", httpHeader.getName()));
+            System.out.println(String.format("Request httpHeader Value is : %s", httpHeader.getValue()));
+        });
+        response.getRequest().getBody().subscribe(byteBuffer -> {
+            System.out.println("**************************************************************");
+            Charset charset = Charset.forName("UTF-8");
+            CharsetDecoder decoder = charset.newDecoder();
             try {
-                HttpEntity respEntity = response.getEntity();
-                if (respEntity != null) {
-                    System.out.println("----------");
-                    System.out.println(response.getStatusLine());
-                    System.out.println("Response content is :\n");
-                    System.out.println(EntityUtils.toString(respEntity, "utf-8"));
-                    System.out.println("----------");
-                }
-            } catch (Exception respEx) {
-                respEx.printStackTrace();
-            } finally {
-                response.close();
-            }
-
-        } catch (Exception ex) {
-            System.err.println("Exception on Anomaly Detection: " + ex.getMessage());
-            ex.printStackTrace();
-        } finally {
-            try {
-                client.close();
-            } catch (Exception e) {
-                System.err.println("Exception on closing HttpClient: " + e.getMessage());
+                CharBuffer charBuffer = decoder.decode(byteBuffer.asReadOnlyBuffer());
+                System.out.println(String.format("Request body is : %s", charBuffer.toString()));
+            } catch (CharacterCodingException e) {
                 e.printStackTrace();
             }
-        }
+        });
+        System.out.println("Response detail information...................................");
+        System.out.println("**************************************************************");
+        System.out.println(String.format("Status code is : %s", response.getStatusCode()));
+        response.getHeaders().stream().forEach(httpHeader -> {
+            System.out.println("**************************************************************");
+            System.out.println(String.format("Response httpHeader name is : %s", httpHeader.getName()));
+            System.out.println(String.format("Response httpHeader Value is : %s", httpHeader.getValue()));
+        });
+        System.out.println("**************************************************************");
+        System.out.println(String.format("Expected value is : %s, Period is : %s, Lower margin is : %s, Upper margin : %s, Suggested window is : %s",
+                response.getValue().getExpectedValue(),
+                response.getValue().getPeriod(),
+                response.getValue().getLowerMargin(),
+                response.getValue().getUpperMargin(),
+                response.getValue().getSuggestedWindow()));
     }
 }
