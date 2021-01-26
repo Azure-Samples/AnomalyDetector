@@ -10,8 +10,9 @@ import com.azure.core.http.HttpPipelineBuilder;
 import com.azure.core.http.policy.AddHeadersPolicy;
 import com.azure.core.http.policy.AzureKeyCredentialPolicy;
 import com.azure.core.http.policy.HttpPipelinePolicy;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import java.io.IOException;
 import java.nio.CharBuffer;
@@ -40,8 +41,6 @@ public class Main {
 
     private static final String END_POINT = "<YOUR-ANOMALY-DETECTOR-END-POINT>";
 
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().registerModule(new Jdk8Module());
-
     private static final HttpPipelinePolicy AUTH_POLICY =
             new AzureKeyCredentialPolicy(OCP_APIM_SUBSCRIPTION_KEY,
                     new AzureKeyCredential(SUBSCRIPTION_KEY));
@@ -57,17 +56,19 @@ public class Main {
         AnomalyDetectorAsyncClient asyncClient = new AnomalyDetectorClientBuilder()
                 .endpoint(END_POINT).pipeline(HTTP_PIPELINE).buildAsyncClient();
 
-        RequestData requestData = OBJECT_MAPPER.readValue(Main.class.getResource("/request-data.json"), RequestData.class);
+        JSONObject requestJson = new JSONObject(new JSONTokener((Main.class.getResourceAsStream("/request-data.json"))));
         List<TimeSeriesPoint> timeSeriesPointList = new ArrayList<>();
-        for (Series series : requestData.series()) {
+        JSONArray seriesArray = requestJson.getJSONArray("series");
+        for (int i = 0; i < seriesArray.length(); i++) {
+            JSONObject seriesObject = seriesArray.getJSONObject(i);
             TimeSeriesPoint timeSeriesPoint = new TimeSeriesPoint()
-                    .setTimestamp(OffsetDateTime.ofInstant(Instant.parse(series.timestamp()), ZoneOffset.UTC))
-                    .setValue(series.value().floatValue());
+                    .setTimestamp(OffsetDateTime.ofInstant(Instant.parse(seriesObject.getString("timestamp")), ZoneOffset.UTC))
+                    .setValue(seriesObject.getFloat("value"));
             timeSeriesPointList.add(timeSeriesPoint);
         }
 
         DetectRequest request = new DetectRequest()
-                .setGranularity(TimeGranularity.fromString(requestData.granularity()))
+                .setGranularity(TimeGranularity.fromString(requestJson.getString("granularity")))
                 .setSeries(timeSeriesPointList);
 
         asyncClient.detectLastPointWithResponse(request).subscribe(response -> {
