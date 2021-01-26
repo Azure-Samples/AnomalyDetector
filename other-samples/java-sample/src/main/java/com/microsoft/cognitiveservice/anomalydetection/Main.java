@@ -10,7 +10,6 @@ import com.azure.core.http.HttpPipelineBuilder;
 import com.azure.core.http.policy.AddHeadersPolicy;
 import com.azure.core.http.policy.AzureKeyCredentialPolicy;
 import com.azure.core.http.policy.HttpPipelinePolicy;
-import com.azure.core.http.rest.Response;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 
@@ -31,29 +30,35 @@ public class Main {
     // **********************************************
 
     // Replace the subscriptionKey string value with your valid subscription key.
-    private static final String subscriptionKey = "<Subscription Key>";
+    private static final String OCP_APIM_SUBSCRIPTION_KEY = "Ocp-Apim-Subscription-Key";
 
-    private static final String END_POINT = "<Anomaly Detector End Point>";
+    private static final String CONTENT_TYPE = "Content-Type";
+
+    private static final String APPLICATION_JSON = "application/json";
+
+    private static final String SUBSCRIPTION_KEY = "<YOUR-SUBSCRIPTION-KEY>";
+
+    private static final String END_POINT = "<YOUR-ANOMALY-DETECTOR-END-POINT>";
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().registerModule(new Jdk8Module());
 
-    private static final HttpPipelinePolicy authPolicy =
-            new AzureKeyCredentialPolicy("Ocp-Apim-Subscription-Key",
-                    new AzureKeyCredential(subscriptionKey));
+    private static final HttpPipelinePolicy AUTH_POLICY =
+            new AzureKeyCredentialPolicy(OCP_APIM_SUBSCRIPTION_KEY,
+                    new AzureKeyCredential(SUBSCRIPTION_KEY));
 
-    private static final AddHeadersPolicy addHeadersPolicy =
-            new AddHeadersPolicy(new HttpHeaders().put("Content-Type", "application/json"));
+    private static final AddHeadersPolicy ADD_HEADERS_POLICY =
+            new AddHeadersPolicy(new HttpHeaders().put(CONTENT_TYPE, APPLICATION_JSON));
 
-    private static final HttpPipeline httpPipeline =
-            new HttpPipelineBuilder().policies(authPolicy, addHeadersPolicy).build();
+    private static final HttpPipeline HTTP_PIPELINE =
+            new HttpPipelineBuilder().policies(AUTH_POLICY, ADD_HEADERS_POLICY).build();
 
     public static void main(String[] args) throws IOException {
 
         AnomalyDetectorAsyncClient asyncClient = new AnomalyDetectorClientBuilder()
-                .endpoint(END_POINT).pipeline(httpPipeline).buildAsyncClient();
+                .endpoint(END_POINT).pipeline(HTTP_PIPELINE).buildAsyncClient();
 
         RequestData requestData = OBJECT_MAPPER.readValue(Main.class.getResource("/request-data.json"), RequestData.class);
-        List<TimeSeriesPoint> timeSeriesPointList = new ArrayList<TimeSeriesPoint>();
+        List<TimeSeriesPoint> timeSeriesPointList = new ArrayList<>();
         for (Series series : requestData.series()) {
             TimeSeriesPoint timeSeriesPoint = new TimeSeriesPoint()
                     .setTimestamp(OffsetDateTime.ofInstant(Instant.parse(series.timestamp()), ZoneOffset.UTC))

@@ -13,7 +13,7 @@ public abstract class RequestData {
 
     @JsonCreator
     public static RequestData create(@JsonProperty(GRANULARITY) String granularity, @JsonProperty(SERIES) List<Series> series) {
-        return new com.microsoft.cognitiveservice.anomalydetection.AutoValue_RequestData(granularity, series);
+        return new AutoValue_RequestData(granularity, series);
     }
 
     @JsonProperty(GRANULARITY)
