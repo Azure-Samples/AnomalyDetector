@@ -11,7 +11,8 @@
   "author": "zhuxia@microsoft.com",
   "license": "ISC",
   "dependencies": {
-    "@azure/cognitiveservices-anomalydetector": "^1.0.0",
+    "@azure/ai-anomaly-detector": "^3.0.0-beta.2",
+    "@azure/core-auth": "^1.1.4",
     "csv-parse": "^4.4.0",
     "tsc": "^1.20150623.0",
     "typescript": "^3.4.3"
