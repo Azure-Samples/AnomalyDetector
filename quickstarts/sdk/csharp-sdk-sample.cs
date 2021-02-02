@@ -23,52 +23,48 @@ namespace AnomalyDetectorSample
     using System.Linq;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Microsoft.Azure.CognitiveServices.AnomalyDetector;
-    using Microsoft.Azure.CognitiveServices.AnomalyDetector.Models;
+    using Azure.AI.AnomalyDetector;
+    using Azure;
+    using Azure.AI.AnomalyDetector.Models;
+    using System.Reflection;
     // </usingStatements>
 
-    class Program{
+    class Program
+    {
 
         // <mainMethod>
-        static void Main(string[] args){
+        static void Main(string[] args)
+        {
             //This sample assumes you have created an environment variable for your key and endpoint
             string endpoint = Environment.GetEnvironmentVariable("ANOMALY_DETECTOR_ENDPOINT");
             string key = Environment.GetEnvironmentVariable("ANOMALY_DETECTOR_KEY");
-            string datapath = "request-data.csv";
+            string datapath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "request-data.csv");
 
-            IAnomalyDetectorClient client = createClient(endpoint, key); //Anomaly Detector client
+            var endpointUri = new Uri(endpoint);
+            var credential = new AzureKeyCredential(key);
 
-            Request request = GetSeriesFromFile(datapath); // The request payload with points from the data file
+            AnomalyDetectorClient client = new AnomalyDetectorClient(endpointUri, credential);
+
+            DetectRequest request = new DetectRequest(GetSeriesFromFile(datapath), TimeGranularity.Daily); // The request payload with points from the data file
+            ChangePointDetectRequest changePointDetectRequest = new ChangePointDetectRequest(GetSeriesFromFile(datapath), TimeGranularity.Daily);
 
             EntireDetectSampleAsync(client, request).Wait(); // Async method for batch anomaly detection
             LastDetectSampleAsync(client, request).Wait(); // Async method for analyzing the latest data point in the set
-            DetectChangePoint(client, request).Wait(); // Async method for change point detection
+            DetectChangePoint(client, changePointDetectRequest).Wait(); // Async method for change point detection
 
             Console.WriteLine("\nPress ENTER to exit.");
             Console.ReadLine();
         }
         // </mainMethod>
 
-        // <createClient>
-        static IAnomalyDetectorClient createClient(string endpoint, string key)
-        {
-            IAnomalyDetectorClient client = new AnomalyDetectorClient(new ApiKeyServiceClientCredentials(key))
-            {
-                Endpoint = endpoint
-            };
-            return client;
-        }
-        // </createClient>
-
         // <runSamplesHelper>
         //Run the anomaly detection examples with extra error handling
-        static void runSamples(IAnomalyDetectorClient client, string dataPath)
+        static void runSamples(AnomalyDetectorClient client, string dataPath)
         {
 
             try
             {
-                List<Point> series = GetSeriesFromFile(dataPath);
-                Request request = new Request(series, Granularity.Daily);
+                DetectRequest request = new DetectRequest(GetSeriesFromFile(dataPath), TimeGranularity.Daily);
 
                 EntireDetectSampleAsync(client, request).Wait();
                 LastDetectSampleAsync(client, request).Wait();
@@ -76,12 +72,12 @@ namespace AnomalyDetectorSample
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                if (e.InnerException != null && e.InnerException is APIErrorException)
+                if (e.InnerException != null && e.InnerException is RequestFailedException exception)
                 {
-                    APIError error = ((APIErrorException)e.InnerException).Body;
-                    Console.WriteLine("Error code: " + error.Code);
-                    Console.WriteLine("Error message: " + error.Message);
+                    Console.WriteLine("Error code: " + exception.ErrorCode);
+                    Console.WriteLine("Error message: " + exception.Message);
                 }
+
                 else if (e.InnerException != null)
                 {
                     Console.WriteLine(e.InnerException.Message);
@@ -91,24 +87,24 @@ namespace AnomalyDetectorSample
         // </runSamplesHelper>
 
         // <GetSeriesFromFile>
-        static Request GetSeriesFromFile(string path)
+        static List<TimeSeriesPoint> GetSeriesFromFile(string path)
         {
-            List<Point> list = File.ReadAllLines(path, Encoding.UTF8)
+            List<TimeSeriesPoint> list = File.ReadAllLines(path, Encoding.UTF8)
                 .Where(e => e.Trim().Length != 0)
                 .Select(e => e.Split(','))
                 .Where(e => e.Length == 2)
-                .Select(e => new Point(DateTime.Parse(e[0]), Double.Parse(e[1]))).ToList();
-            
-            return new Request(list, Granularity.Daily); 
+                .Select(e => new TimeSeriesPoint(DateTime.Parse(e[0]), float.Parse(e[1]))).ToList();
+
+            return list;
         }
         // </GetSeriesFromFile>
 
         // <entireDatasetExample>
-        static async Task EntireDetectSampleAsync(IAnomalyDetectorClient client, Request request)
+        static async Task EntireDetectSampleAsync(AnomalyDetectorClient client, DetectRequest request)
         {
             Console.WriteLine("Detecting anomalies in the entire time series.");
 
-            EntireDetectResponse result = await client.EntireDetectAsync(request).ConfigureAwait(false);
+            EntireDetectResponse result = await client.DetectEntireSeriesAsync(request).ConfigureAwait(false);
 
             if (result.IsAnomaly.Contains(true))
             {
@@ -131,11 +127,12 @@ namespace AnomalyDetectorSample
         // </entireDatasetExample>
 
         // <latestPointExample>
-        static async Task LastDetectSampleAsync(IAnomalyDetectorClient client, Request request)
+        static async Task LastDetectSampleAsync(AnomalyDetectorClient client, DetectRequest request)
         {
 
             Console.WriteLine("Detecting the anomaly status of the latest point in the series.");
-            LastDetectResponse result = await client.LastDetectAsync(request).ConfigureAwait(false);
+
+            LastDetectResponse result = await client.DetectLastPointAsync(request).ConfigureAwait(false);
 
             if (result.IsAnomaly)
             {
@@ -149,7 +146,7 @@ namespace AnomalyDetectorSample
         // </latestPointExample>
 
         // <changePointExample>
-        public async Task DetectChangePoint(IAnomalyDetectorClient client, Request request)
+        public static async Task DetectChangePoint(AnomalyDetectorClient client, ChangePointDetectRequest request)
         {
             Console.WriteLine("Detecting the change points in the series.");
 
