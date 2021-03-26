@@ -54,7 +54,7 @@ public class Main {
         List<TimeSeriesPoint> timeSeriesPointList = new ArrayList<>();
         for (Series series : requestData.series()) {
             TimeSeriesPoint timeSeriesPoint = new TimeSeriesPoint()
-                    .setTimestamp(OffsetDateTime.ofInstant(Instant.parse(series.timestamp()), ZoneOffset.UTC))
+                    .setTimestamp(Instant.parse(series.timestamp()).atOffset(ZoneOffset.UTC))
                     .setValue(series.value());
             timeSeriesPointList.add(timeSeriesPoint);
         }
