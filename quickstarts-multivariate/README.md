@@ -7,11 +7,7 @@ languages:
 - javascript
 products:
 - azure
-- anomalydetector
-- anomaly-detector
-- anomaly-detector-multivariate
 description: "This repository contains samples for Anomaly Detector multivariate API. The Anomaly Detector multivariate API enables you to monitor and find abnormalities in your time series data by automatically identifying and applying the correct statistical models, regardless of industry, scenario, or data volume."
-urlFragment: AnomalyDetectorMultivatiate
 ---
 
 # Anomaly Detector multivariate API Samples
