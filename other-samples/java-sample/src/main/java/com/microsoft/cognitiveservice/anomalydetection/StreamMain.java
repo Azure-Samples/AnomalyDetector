@@ -1,5 +1,13 @@
 package com.microsoft.cognitiveservice.anomalydetection;
 
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collection;
+
+import com.google.gson.Gson;
+
+import org.apache.commons.io.IOUtils;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -7,35 +15,36 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 
-import java.io.*;
+public class StreamMain{
 
-public class Main {
-    // **********************************************
-    // *** Update or verify the following values. ***
-    // **********************************************
-
-    // Replace the subscriptionKey string value with your valid subscription key.
-
-    private static final String subscriptionKey = "<Subscription Key>";
-
+    private static final String subscriptionKey = "xxxxx";
 
     // Choose which anomaly detection way you want to use and change the uriBase's second part
-    private static final String rootUrl = "https://westus2.api.cognitive.microsoft.com/anomalydetector/v1.0";
+    private static final String rootUrl = "http://localhost:5000/anomalydetector/v1.0";
     private static final String lastDetect = "/timeseries/last/detect";
-    private static final String entireDetect = "/timeseries/entire/detect";
-    private static final String uriBase = rootUrl + entireDetect;
-
-    public static void main(String[] args) throws FileNotFoundException  {
+    private static final String uriBase = rootUrl + lastDetect;
+    
+    public static void main(String[] args) throws Exception{
         String resourceName = "/request-data.json";
-        InputStream is = Main.class.getResourceAsStream(resourceName);
-        if (is == null) {
-            throw new NullPointerException("Cannot find resource file " + resourceName);
+        String rawRequest = IOUtils.toString(StreamMain.class.getResourceAsStream(resourceName),StandardCharsets.UTF_8);
+        AnomalyDetectorRequest anomalyDetectorRequest = new Gson().fromJson(rawRequest, AnomalyDetectorRequest.class);
+        Collection<Point> pointCollection = anomalyDetectorRequest.getSeries();
+        int i = 0;
+        AnomalyDetectorRequest request = new AnomalyDetectorRequest(new ArrayList<Point>(), anomalyDetectorRequest.getGranularity());
+        for(Point p : pointCollection){
+            
+            request.getSeries().add(p);
+            if(++i == 12){
+                doRequest(request);
+                request = new AnomalyDetectorRequest(new ArrayList<Point>(), anomalyDetectorRequest.getGranularity());
+                i = 0;
+            }
+
         }
-        JSONTokener tokener = new JSONTokener(is);
-        String content = new JSONObject(tokener).toString();
+    }
+
+    private static void doRequest(AnomalyDetectorRequest anomalyDetectorRequest){
         CloseableHttpClient client = HttpClients.createDefault();
         HttpPost request = new HttpPost(uriBase);
 
@@ -44,7 +53,7 @@ public class Main {
         request.setHeader("Ocp-Apim-Subscription-Key", subscriptionKey);
 
         try {
-            StringEntity params = new StringEntity(content);
+            StringEntity params = new StringEntity(new Gson().toJson(anomalyDetectorRequest));
             request.setEntity(params);
 
             CloseableHttpResponse response = client.execute(request);
