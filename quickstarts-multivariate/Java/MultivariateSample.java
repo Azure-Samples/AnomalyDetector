@@ -79,11 +79,10 @@ public class MultivariateSample {
         return model_id;
     }
 
-    private static ModelStatus getModelStatus(AnomalyDetectorClient client, UUID model_id) {
+    private static Response<Model> getModelStatus(AnomalyDetectorClient client, UUID model_id) {
         Response<Model> response = client.getMultivariateModelWithResponse(model_id, Context.NONE);
-        UUID model = response.getValue().getModelId();
         System.out.println("training");
-        return response.getValue().getModelInfo().getStatus();
+        return response;
     }
 
     private static UUID getResultId(AnomalyDetectorClient client, UUID modelId, DetectionRequest detectionRequest) {
@@ -94,10 +93,9 @@ public class MultivariateSample {
         return resultId;
     }
 
-    private static DetectionStatus getInferenceStatus(AnomalyDetectorClient client, UUID resultId) {
+    private static DetectionResult getInferenceStatus(AnomalyDetectorClient client, UUID resultId) {
         DetectionResult response = client.getDetectionResult(resultId);
-        DetectionStatus status = response.getSummary().getStatus();
-        return status;
+        return response;
     }
 
     private static void ExportResult(AnomalyDetectorClient client, UUID modelId, String path) throws FileNotFoundException {
@@ -147,29 +145,50 @@ public class MultivariateSample {
         UUID modelId = getMetricId(client, request);
         System.out.println(modelId);
 
-        //Check model status util the model get ready
+        //Check model status until the model get ready
+        Response<Model> trainResponse;
         while (true) {
-            ModelStatus modelStatus = getModelStatus(client, modelId);
-            TimeUnit.SECONDS.sleep(5);
-            assert modelStatus != ModelStatus.FAILED;
-            if (modelStatus == ModelStatus.READY) {
+            trainResponse = getModelStatus(client, modelId);
+            ModelStatus modelStatus = trainResponse.getValue().getModelInfo().getStatus();
+            TimeUnit.SECONDS.sleep(10);
+            if (modelStatus == ModelStatus.READY || modelStatus == ModelStatus.FAILED) {
                 break;
             }
+        }
+
+        if (trainResponse.getValue().getModelInfo().getStatus() != ModelStatus.READY){
+            System.out.println("Training failed.");
+            List<ErrorResponse> errorMessages = trainResponse.getValue().getModelInfo().getErrors();
+            for (ErrorResponse errorMessage : errorMessages) {
+                System.out.println("Error code:  " + errorMessage.getCode());
+                System.out.println("Error message:  " + errorMessage.getMessage());
+            }
+            return ;
         }
 
         //Start inference and get the Result ID
         DetectionRequest detectionRequest = new DetectionRequest().setSource(source).setStartTime(startTime).setEndTime(endTime);
         UUID resultId = getResultId(client, modelId, detectionRequest);
 
-
-        //Check inference status util the result get ready
+        //Check inference status until the result get ready
+        DetectionResult detectionResult;
         while (true) {
-            DetectionStatus detectionStatus = getInferenceStatus(client, resultId);
-            TimeUnit.SECONDS.sleep(5);
-            assert detectionStatus != DetectionStatus.FAILED;
-            if (detectionStatus == DetectionStatus.READY) {
+            detectionResult = getInferenceStatus(client, resultId);
+            DetectionStatus detectionStatus = detectionResult.getSummary().getStatus();;
+            TimeUnit.SECONDS.sleep(10);
+            if (detectionStatus == DetectionStatus.READY || detectionStatus == DetectionStatus.FAILED) {
                 break;
             }
+        }
+
+        if (detectionResult.getSummary().getStatus() != DetectionStatus.READY){
+            System.out.println("Inference failed");
+            List<ErrorResponse> detectErrorMessages = detectionResult.getSummary().getErrors();
+            for (ErrorResponse errorMessage : detectErrorMessages) {
+                System.out.println("Error code:  " + errorMessage.getCode());
+                System.out.println("Error message:  " + errorMessage.getMessage());
+            }
+            return ;
         }
 
         //Export result files to local
