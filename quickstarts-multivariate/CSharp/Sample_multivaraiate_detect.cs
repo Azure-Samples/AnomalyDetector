@@ -97,7 +97,7 @@ namespace Azure.AI.AnomalyDetector.Tests.Samples
                     System.Threading.Thread.Sleep(10000);
                     get_response = await client.GetMultivariateModelAsync(trained_model_id).ConfigureAwait(false);
                     Console.WriteLine(String.Format("model_id: {0}, createdTime: {1}, lastUpdateTime: {2}, status: {3}.", get_response.Value.ModelId, get_response.Value.CreatedTime, get_response.Value.LastUpdatedTime, get_response.Value.ModelInfo.Status));
-                };
+                }
 
                 if (get_response.Value.ModelInfo.Status != ModelStatus.Ready)
                 {
@@ -107,9 +107,9 @@ namespace Azure.AI.AnomalyDetector.Tests.Samples
                     {
                         Console.WriteLine(String.Format("Error code: {0}.", error.Code));
                         Console.WriteLine(String.Format("Error message: {0}.", error.Message));
-                    };
+                    }
                     throw new Exception("Training failed.");
-                };
+                }
 
                 model_number = await getModelNumberAsync(client).ConfigureAwait(false);
                 Console.WriteLine(String.Format("{0} available models after training.", model_number));
@@ -151,9 +151,9 @@ namespace Azure.AI.AnomalyDetector.Tests.Samples
                     {
                         Console.WriteLine(String.Format("Error code: {0}.", error.Code));
                         Console.WriteLine(String.Format("Error message: {0}.", error.Message));
-                    };
+                    }
                     return null;
-                };
+                }
 
                 return result.Value;
             }

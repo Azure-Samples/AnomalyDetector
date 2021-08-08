@@ -45,7 +45,6 @@ class MultivariateSample:
         self.data_source = data_source
 
     def train(self, start_time, end_time):
-
         # Number of models available now
         model_list = list(self.ad_client.list_multivariate_model(skip=0, top=10000))
         print("{:d} available models before training.".format(len(model_list)))
@@ -54,8 +53,7 @@ class MultivariateSample:
         print("Training new model...(it may take a few minutes)")
         data_feed = ModelInfo(start_time=start_time, end_time=end_time, source=self.data_source)
         response_header = \
-            self.ad_client.train_multivariate_model(data_feed, cls=lambda *args: [args[i] for i in range(len(args))])[
-                -1]
+            self.ad_client.train_multivariate_model(data_feed, cls=lambda *args: [args[i] for i in range(len(args))])[-1]
         trained_model_id = response_header['Location'].split("/")[-1]
 
         # Wait until the model is ready. It usually takes several minutes
@@ -64,7 +62,7 @@ class MultivariateSample:
         while model_status != ModelStatus.READY and model_status != ModelStatus.FAILED:
             model_info = self.ad_client.get_multivariate_model(trained_model_id).model_info
             model_status = model_info.status
-            time.sleep(1)
+            time.sleep(10)
 
         if model_status == ModelStatus.FAILED:
             print("Creating model failed.")
@@ -88,7 +86,6 @@ class MultivariateSample:
 
 
     def detect(self, model_id, start_time, end_time):
-
         # Detect anomaly in the same data source (but a different interval)
         try:
             detection_req = DetectionRequest(source=self.data_source, start_time=start_time, end_time=end_time)
