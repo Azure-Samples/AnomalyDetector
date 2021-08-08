@@ -71,33 +71,29 @@ public class MultivariateSample {
         return anomalyDetectorClient;
     }
 
-    private static UUID getMetricId(AnomalyDetectorClient client, ModelInfo request) {
+    private static UUID getModelId(AnomalyDetectorClient client, ModelInfo request) {
         TrainMultivariateModelResponse trainMultivariateModelResponse = client.trainMultivariateModelWithResponse(request, Context.NONE);
         String header = trainMultivariateModelResponse.getDeserializedHeaders().getLocation();
-        String[] model_ids = header.split("/");
-        UUID model_id = UUID.fromString(model_ids[model_ids.length - 1]);
-        return model_id;
+        String[] substring = header.split("/");
+        return UUID.fromString(substring[substring.length - 1]);
     }
 
-    private static ModelStatus getModelStatus(AnomalyDetectorClient client, UUID model_id) {
+    private static Response<Model> getModelStatus(AnomalyDetectorClient client, UUID model_id) {
         Response<Model> response = client.getMultivariateModelWithResponse(model_id, Context.NONE);
-        UUID model = response.getValue().getModelId();
         System.out.println("training");
-        return response.getValue().getModelInfo().getStatus();
+        return response;
     }
 
     private static UUID getResultId(AnomalyDetectorClient client, UUID modelId, DetectionRequest detectionRequest) {
         DetectAnomalyResponse detectAnomalyResponse = client.detectAnomalyWithResponse(modelId, detectionRequest, Context.NONE);
-        String response = detectAnomalyResponse.getDeserializedHeaders().getLocation();
-        String[] result = response.split("/");
-        UUID resultId = UUID.fromString(result[result.length - 1]);
-        return resultId;
+        String location = detectAnomalyResponse.getDeserializedHeaders().getLocation();
+        String[] substring = location.split("/");
+        return UUID.fromString(substring[substring.length - 1]);
     }
 
-    private static DetectionStatus getInferenceStatus(AnomalyDetectorClient client, UUID resultId) {
+    private static DetectionResult getInferenceStatus(AnomalyDetectorClient client, UUID resultId) {
         DetectionResult response = client.getDetectionResult(resultId);
-        DetectionStatus status = response.getSummary().getStatus();
-        return status;
+        return response;
     }
 
     private static void ExportResult(AnomalyDetectorClient client, UUID modelId, String path) throws FileNotFoundException {
@@ -136,40 +132,68 @@ public class MultivariateSample {
         AlignMode alignMode = AlignMode.OUTER;
         FillNAMethod fillNAMethod = FillNAMethod.LINEAR;
         Integer paddingValue = 0;
-        AlignPolicy alignPolicy = new AlignPolicy().setAlignMode(alignMode).setFillNAMethod(fillNAMethod).setPaddingValue(paddingValue);
+        AlignPolicy alignPolicy = new AlignPolicy()
+                                      .setAlignMode(alignMode)
+                                      .setFillNAMethod(fillNAMethod)
+                                      .setPaddingValue(paddingValue);
         String source = "<Your own data source>";
         OffsetDateTime startTime = OffsetDateTime.of(2021, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC);
-        ;
         OffsetDateTime endTime = OffsetDateTime.of(2021, 1, 2, 12, 0, 0, 0, ZoneOffset.UTC);
-        ;
         String displayName = "<placeholder>";
-        ModelInfo request = new ModelInfo().setSlidingWindow(window).setAlignPolicy(alignPolicy).setSource(source).setStartTime(startTime).setEndTime(endTime).setDisplayName(displayName);
-        UUID modelId = getMetricId(client, request);
+        ModelInfo request = new ModelInfo()
+                                .setSlidingWindow(window)
+                                .setAlignPolicy(alignPolicy)
+                                .setSource(source)
+                                .setStartTime(startTime)
+                                .setEndTime(endTime)
+                                .setDisplayName(displayName);
+        UUID modelId = getModelId(client, request);
         System.out.println(modelId);
 
-        //Check model status util the model get ready
+        //Check model status until the model get ready
+        Response<Model> trainResponse;
         while (true) {
-            ModelStatus modelStatus = getModelStatus(client, modelId);
-            TimeUnit.SECONDS.sleep(5);
-            assert modelStatus != ModelStatus.FAILED;
-            if (modelStatus == ModelStatus.READY) {
+            trainResponse = getModelStatus(client, modelId);
+            ModelStatus modelStatus = trainResponse.getValue().getModelInfo().getStatus();
+            if (modelStatus == ModelStatus.READY || modelStatus == ModelStatus.FAILED) {
                 break;
             }
+            TimeUnit.SECONDS.sleep(10);
+        }
+
+        if (trainResponse.getValue().getModelInfo().getStatus() != ModelStatus.READY){
+            System.out.println("Training failed.");
+            List<ErrorResponse> errorMessages = trainResponse.getValue().getModelInfo().getErrors();
+            for (ErrorResponse errorMessage : errorMessages) {
+                System.out.println("Error code:  " + errorMessage.getCode());
+                System.out.println("Error message:  " + errorMessage.getMessage());
+            }
+            return;
         }
 
         //Start inference and get the Result ID
         DetectionRequest detectionRequest = new DetectionRequest().setSource(source).setStartTime(startTime).setEndTime(endTime);
         UUID resultId = getResultId(client, modelId, detectionRequest);
 
-
-        //Check inference status util the result get ready
+        //Check inference status until the result get ready
+        DetectionResult detectionResult;
         while (true) {
-            DetectionStatus detectionStatus = getInferenceStatus(client, resultId);
-            TimeUnit.SECONDS.sleep(5);
-            assert detectionStatus != DetectionStatus.FAILED;
-            if (detectionStatus == DetectionStatus.READY) {
+            detectionResult = getInferenceStatus(client, resultId);
+            DetectionStatus detectionStatus = detectionResult.getSummary().getStatus();
+            if (detectionStatus == DetectionStatus.READY || detectionStatus == DetectionStatus.FAILED) {
                 break;
             }
+            TimeUnit.SECONDS.sleep(10);
+        }
+
+        if (detectionResult.getSummary().getStatus() != DetectionStatus.READY){
+            System.out.println("Inference failed");
+            List<ErrorResponse> detectErrorMessages = detectionResult.getSummary().getErrors();
+            for (ErrorResponse errorMessage : detectErrorMessages) {
+                System.out.println("Error code:  " + errorMessage.getCode());
+                System.out.println("Error message:  " + errorMessage.getMessage());
+            }
+            return;
         }
 
         //Export result files to local
