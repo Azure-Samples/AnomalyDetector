@@ -21,41 +21,13 @@
         </plugins>
     </build>
     <properties>
-        <jackson.version>2.12.2</jackson.version>
-        <auto-value.version>1.7.5</auto-value.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-jdk8</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.auto.value</groupId>
-            <artifactId>auto-value-annotations</artifactId>
-            <version>${auto-value.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.auto.value</groupId>
-            <artifactId>auto-value</artifactId>
-            <version>${auto-value.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>com.azure</groupId>
             <artifactId>azure-ai-anomalydetector</artifactId>
-            <version>3.0.0-beta.1</version>
+            <version>3.0.0-beta.2</version>
         </dependency>
     </dependencies>
 </project>
