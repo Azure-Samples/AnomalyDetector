@@ -2,24 +2,26 @@ package com.microsoft.cognitiveservice.anomalydetection;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.auto.value.AutoValue;
 
 import java.util.List;
 
-@AutoValue
-public abstract class RequestData {
+public class RequestData {
     public static final String GRANULARITY = "granularity";
     public static final String SERIES = "series";
+    private final String granularity;
+    private final List<Series> series;
 
     @JsonCreator
-    public static RequestData create(@JsonProperty(GRANULARITY) String granularity, @JsonProperty(SERIES) List<Series> series) {
-        return new com.microsoft.cognitiveservice.anomalydetection.AutoValue_RequestData(granularity, series);
+    public RequestData(@JsonProperty(GRANULARITY) String granularity, @JsonProperty(SERIES) List<Series> series) {
+        this.granularity = granularity;
+        this.series = series;
     }
 
-    @JsonProperty(GRANULARITY)
-    public abstract String granularity();
+    public String getGranularity() {
+        return granularity;
+    }
 
-    @JsonProperty(SERIES)
-    public abstract List<Series> series();
-
+    public List<Series> getSeries() {
+        return series;
+    }
 }
