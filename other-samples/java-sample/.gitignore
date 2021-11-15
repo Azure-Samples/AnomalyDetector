@@ -24,5 +24,11 @@ hs_err_pid*
 # Intelli-J ignores.
 target/
 .idea/
+.settings/
+.vscode/
 
 *.iml
+.classpath
+.factorypath
+.project
+*.prefs
