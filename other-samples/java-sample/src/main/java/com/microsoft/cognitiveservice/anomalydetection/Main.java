@@ -1,76 +1,81 @@
 package com.microsoft.cognitiveservice.anomalydetection;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONObject;
-import org.json.JSONTokener;
+import com.azure.ai.anomalydetector.AnomalyDetectorClient;
+import com.azure.ai.anomalydetector.AnomalyDetectorClientBuilder;
+import com.azure.ai.anomalydetector.models.DetectRequest;
+import com.azure.ai.anomalydetector.models.LastDetectResponse;
+import com.azure.ai.anomalydetector.models.TimeGranularity;
+import com.azure.ai.anomalydetector.models.TimeSeriesPoint;
+import com.azure.core.credential.AzureKeyCredential;
+import com.azure.core.http.HttpPipeline;
+import com.azure.core.http.HttpPipelineBuilder;
+import com.azure.core.http.policy.AzureKeyCredentialPolicy;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Main {
     // **********************************************
     // *** Update or verify the following values. ***
     // **********************************************
+    private static final String OCP_APIM_SUBSCRIPTION_KEY = "Ocp-Apim-Subscription-Key";
 
     // Replace the subscriptionKey string value with your valid subscription key.
-    private static final String subscriptionKey = "<Subscription Key>";
+    private static final String SUBSCRIPTION_KEY = "<YOUR-SUBSCRIPTION-KEY>";
 
-    // Choose which anomaly detection way you want to use and change the uriBase's second part
-    private static final String rootUrl = "https://westus2.api.cognitive.microsoft.com/anomalydetector/v1.0";
-    private static final String lastDetect = "/timeseries/last/detect";
-    private static final String entireDetect = "/timeseries/entire/detect";
-    private static final String uriBase = rootUrl + lastDetect;
+    private static final String ENDPOINT = "https://<YOUR-ANOMALY-DETECTOR-ENDPOINT>";
 
-    public static void main(String[] args) throws FileNotFoundException  {
-        String resourceName = "/request-data.json";
-        InputStream is = Main.class.getResourceAsStream(resourceName);
-        if (is == null) {
-            throw new NullPointerException("Cannot find resource file " + resourceName);
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+    public static void main(String[] args) throws IOException {
+
+        final RequestData requestData;
+        try (InputStream resourceAsStream = Main.class.getResourceAsStream("/request-data.json")) {
+            requestData = OBJECT_MAPPER.readValue(resourceAsStream, RequestData.class);
         }
-        JSONTokener tokener = new JSONTokener(is);
-        String content = new JSONObject(tokener).toString();
-        CloseableHttpClient client = HttpClients.createDefault();
-        HttpPost request = new HttpPost(uriBase);
 
-        // Request headers.
-        request.setHeader("Content-Type", "application/json");
-        request.setHeader("Ocp-Apim-Subscription-Key", subscriptionKey);
+        final AzureKeyCredentialPolicy credentialPolicy = new AzureKeyCredentialPolicy(OCP_APIM_SUBSCRIPTION_KEY,
+                new AzureKeyCredential(SUBSCRIPTION_KEY));
+        final HttpPipeline httpPipeline = new HttpPipelineBuilder()
+                .policies(credentialPolicy)
+                .build();
 
-        try {
-            StringEntity params = new StringEntity(content);
-            request.setEntity(params);
+        // Create the synchronous client using the builder.
+        final AnomalyDetectorClient asyncClient = new AnomalyDetectorClientBuilder()
+                .endpoint(ENDPOINT)
+                .pipeline(httpPipeline)
+                .buildClient();
 
-            CloseableHttpResponse response = client.execute(request);
-            try {
-                HttpEntity respEntity = response.getEntity();
-                if (respEntity != null) {
-                    System.out.println("----------");
-                    System.out.println(response.getStatusLine());
-                    System.out.println("Response content is :\n");
-                    System.out.println(EntityUtils.toString(respEntity, "utf-8"));
-                    System.out.println("----------");
-                }
-            } catch (Exception respEx) {
-                respEx.printStackTrace();
-            } finally {
-                response.close();
-            }
+        final List<TimeSeriesPoint> timeSeriesPoints = requestData.getSeries()
+                .stream()
+                .map(series -> {
+                    final OffsetDateTime timestamp = Instant.parse(series.getTimestamp()).atOffset(ZoneOffset.UTC);
 
-        } catch (Exception ex) {
-            System.err.println("Exception on Anomaly Detection: " + ex.getMessage());
-            ex.printStackTrace();
-        } finally {
-            try {
-                client.close();
-            } catch (Exception e) {
-                System.err.println("Exception on closing HttpClient: " + e.getMessage());
-                e.printStackTrace();
-            }
-        }
+                    return new TimeSeriesPoint()
+                            .setTimestamp(timestamp)
+                            .setValue(series.getValue());
+                })
+                .collect(Collectors.toList());
+
+        final DetectRequest request = new DetectRequest()
+                .setGranularity(TimeGranularity.fromString(requestData.getGranularity()))
+                .setSeries(timeSeriesPoints);
+
+        final LastDetectResponse lastDetectResponse = asyncClient.detectLastPoint(request);
+
+        System.out.println("**************************************************************");
+        System.out.printf("Expected value is: %.2f, Period is: %d, Lower margin is: %.2f, Upper margin: %.2f, "
+                        + " Suggested window is: %d%n",
+                lastDetectResponse.getExpectedValue(),
+                lastDetectResponse.getPeriod(),
+                lastDetectResponse.getLowerMargin(),
+                lastDetectResponse.getUpperMargin(),
+                lastDetectResponse.getSuggestedWindow());
     }
 }
