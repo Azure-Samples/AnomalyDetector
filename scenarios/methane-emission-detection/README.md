@@ -1,3 +1,3 @@
-# About Scenarios
+# Overview
 
-This folder includes some important scenarios that customers leverage Anomaly Detector service, select each folder to learn more details.
+This folder includes a demo and script about how you could use Anomaly Detector service to detect methane emission.
