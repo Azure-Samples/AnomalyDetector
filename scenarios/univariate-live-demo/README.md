@@ -1,5 +1,7 @@
 # Anomaly Detection Live Demo Instructions
 
+![A screenshot the live demo](image.png)
+
 Please note: this live demo is only intended to demonstrate the Anomaly Detector API on any CSV file that follows a simple schema. This demo loops over the provided data (with fake timestamps) to demonstrate the anomaly detection API. It does not use the real timestamps provided in the raw data, and should not be used in any production scenario. Once the demo is running, you will be able to see the raw data and the results from the anomaly detection API in the browser. 
 
 In your CSV file, you need at least three columns. A column for the timestamp, a column for the values you want to perform anomaly detection, and finally, a dimension column that allows you to run the anomaly detection API across different categories (e.g. different sensors, different regions, or even different variables). The timestamp column should be in the ISO 8601 format `YYYY-MM-DDTHH:MM:SSZ`. If you intend to use your own CSV, please see the `sensor_data.csv` file for how to structure that CSV file.
@@ -55,6 +57,6 @@ Finally, navigate to this directory in your terminal. Make sure you have the `an
 bokeh serve --port 5599 --show demo.py
 ```
 
-A browser tab should open, and the demo should start running. If the browser tab doesn't open, try to open it manually by navigating to `http://localhost:5599/demo` in the browser. If the demo does not start running, please double-check that you followed the steps above correctly. 
+A browser tab should open, and the demo should start running. Any detected anomaly will show in red. If the browser tab doesn't open, try to open it manually by navigating to `http://localhost:5599/demo` in the browser. If the demo does not start running, please double-check that you followed the steps above correctly. 
 
 The demo will continue to run until you stop it. To stop the demo, close the browser tab and enter `Ctrl+C` in the terminal to stop the process.
