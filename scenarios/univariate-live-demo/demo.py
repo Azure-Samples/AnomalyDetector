@@ -22,7 +22,7 @@ from utils import ADTimeSeries, UnivariateAnomalyDetector
 
 
 @dataclass
-class config:
+class Config:
     """
     Dataclass to store the default configuration for the demo. Please change the values if you 
     want to use your own data.
@@ -30,7 +30,7 @@ class config:
     csv_name: str = "sensor_data.csv" # Name of the csv file containing the data
     value_column: str = "sensor_readings" # Name of the column containing the values
     timestamp_column: str = "timestamp" # Name of the column containing the timestamps
-    sensor_column: str = "sensor_name" # Name of the column containing a dimension (e.g. sensor name, or location, etc)
+    dimension_column: str = "sensor_name" # Name of the column containing a dimension (e.g. sensor name, or location, etc)
     window_size: int = 20 # Size of the window used to compute the anomaly score
     minute_resample: int = 5 # Resample the data to this minute resolution
     ad_mode: str = "entire" # Anomaly detection mode to use. Can be "entire" for batch mode or "last" for last point mode.
@@ -44,19 +44,19 @@ endpoint = os.getenv("ANOMALY_DETECTOR_ENDPOINT")
 np.random.seed(1)
 
 # Read CSV:
-df = pd.read_csv(config.csv_name)
+df = pd.read_csv(Config.csv_name)
 
 # Drop any columns that are no longer needed (and might have NaNs):
-df = df[[config.timestamp_column, config.sensor_column, config.value_column]]
+df = df[[Config.timestamp_column, Config.dimension_column, Config.value_column]]
 
 # Drop rows with NaNs:
 df.dropna(inplace=True)
 
 # Pivot dataframe to show time vs. sensor data
 df = df.pivot_table(
-    index=config.timestamp_column,
-    columns=config.sensor_column,
-    values=config.value_column,
+    index=Config.timestamp_column,
+    columns=Config.dimension_column,
+    values=Config.value_column,
     aggfunc="mean",
 )
 
@@ -178,31 +178,31 @@ def _get_value(t):
 
 def _get_timestamp(t):
     timestamp = datetime.datetime(2015, 1, 1, tzinfo=timezone.utc) + timedelta(
-        minutes=config.minute_resample * t
+        minutes=Config.minute_resample * t
     )
     return timestamp, timestamp.isoformat().split("+")[0] + "Z"
 
 
 def _call_ad_api(t):
-    values = source.data["values"][-config.window_size :]
-    timestamps = source.data["timestamp_str"][-config.window_size :]
+    values = source.data["values"][-Config.window_size :]
+    timestamps = source.data["timestamp_str"][-Config.window_size :]
     request = {}
     request["series"] = []
-    for i in range(config.window_size):
+    for i in range(Config.window_size):
         request["series"].append({"value": values[i], "timestamp": timestamps[i]})
 
     request["granularity"] = "minutely"
     request["maxAnomalyRatio"] = max_anomaly_ratio.value
     request["sensitivity"] = sensitivity.value
-    request["customInterval"] = config.minute_resample
+    request["customInterval"] = Config.minute_resample
 
     # validate that the request is valid:
     request = ADTimeSeries(request)
     request.validate()
 
-    results = adclient.detect_anomaly(mode=config.ad_mode, data_dict=request)
+    results = adclient.detect_anomaly(mode=Config.ad_mode, data_dict=request)
 
-    if config.ad_mode == "entire":
+    if Config.ad_mode == "entire":
         results["expected_value"] = results["expected_values"][-1]
         results["upper_margin"] = results["upper_margins"][-1]
         results["lower_margin"] = results["lower_margins"][-1]
@@ -235,7 +235,7 @@ def update(t):
     value = _get_value(t)
     ts, ts_str = _get_timestamp(t)
 
-    if t > config.window_size:
+    if t > Config.window_size:
         # we have enough data to send an API request
         expectedValue, upperband, lowerband, isAnomaly, color = _call_ad_api(t)
     else:
