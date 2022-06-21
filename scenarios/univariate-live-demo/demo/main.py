@@ -132,7 +132,7 @@ p.segment(
     x1="timestamp",
     y1="upperband",
     line_width=10,
-    alpha=0.0,
+    alpha=0.4,
     color="orange",
     source=source,
     legend_label="Expected Range",
@@ -141,7 +141,7 @@ p.segment(
 p.line(
     x="timestamp",
     y="upperband",
-    alpha=0.0,
+    alpha=0.4,
     line_width=1,
     color="orange",
     source=source,
@@ -150,7 +150,7 @@ p.line(
 p.line(
     x="timestamp",
     y="lowerband",
-    alpha=0.0,
+    alpha=0.4,
     line_width=1,
     color="orange",
     source=source,
@@ -161,7 +161,7 @@ p.legend.location = "top_left"
 # -------------------------
 sensitivity = Slider(title="sensitivity", value=95, start=0, end=99, step=1)
 max_anomaly_ratio = Slider(
-    title="max_anomaly_ratio", value=0.25, start=0, end=1, step=0.05
+    title="max_anomaly_ratio", value=0.20, start=0, end=1, step=0.05
 )
 
 sensor_names = list(df.columns)
@@ -256,7 +256,7 @@ def update(t):
         color=[color],
     )
 
-    p.title.text = f"Live Anomaly Detection on Methane Measurement Data - Sensitivity: {sensitivity.value} - M.A.R.: {max_anomaly_ratio.value}"
+    p.title.text = f"Live anomaly detection results | Sensitivity: {sensitivity.value} | Maximum Anomaly Ratio: {max_anomaly_ratio.value}"
     source.stream(
         new_data, rollover=100
     )  # the rollover number must be > window size. It governs the amount of data visible in the window.
