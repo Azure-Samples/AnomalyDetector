@@ -4,10 +4,9 @@
 #
 # -------------------------------------------------------------
 
-from dataclasses import dataclass
 import datetime
 import logging
-import os
+from dataclasses import dataclass
 from datetime import timedelta, timezone
 from os.path import join as pjoin
 
@@ -24,7 +23,6 @@ from utils import ADTimeSeries, UnivariateAnomalyDetector
 # TODO:
 # Update readme, and add a gif of the demo
 # Dataset..
-# change this to a CLI with default values later
 
 
 @dataclass
@@ -40,8 +38,8 @@ class config:
 
 logging.disable()
 
-apikey = os.getenv("ANOMALY_DETECTOR_API_KEY")
-endpoint = os.getenv("ANOMALY_DETECTOR_ENDPOINT")
+apikey = "2d6b1b8d6bd243f3a5032d078327a1f0" # os.getenv("ANOMALY_DETECTOR_API_KEY")
+endpoint = "https://saylibapat-anomaly.cognitiveservices.azure.com/" #os.getenv("ANOMALY_DETECTOR_ENDPOINT")
 
 np.random.seed(1)
 
