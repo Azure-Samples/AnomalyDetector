@@ -10,7 +10,6 @@ import os
 from dataclasses import dataclass
 from datetime import timedelta, timezone
 
-import numpy as np
 import pandas as pd
 from bokeh.driving import count
 from bokeh.layouts import column, row
@@ -24,24 +23,23 @@ from utils import ADTimeSeries, UnivariateAnomalyDetector
 @dataclass
 class Config:
     """
-    Dataclass to store the default configuration for the demo. Please change the values if you 
+    Dataclass to store the default configuration for the demo. Please change the values if you
     want to use your own data.
     """
-    csv_name: str = "sensor_data.csv" # Name of the csv file containing the data
-    value_column: str = "sensor_readings" # Name of the column containing the values
-    timestamp_column: str = "timestamp" # Name of the column containing the timestamps
-    dimension_column: str = "sensor_name" # Name of the column containing a dimension (e.g. sensor name, or location, etc)
-    window_size: int = 20 # Size of the window used to compute the anomaly score
-    minute_resample: int = 5 # Resample the data to this minute resolution
-    ad_mode: str = "entire" # Anomaly detection mode to use. Can be "entire" for batch mode or "last" for last point mode.
+
+    csv_name: str = "sensor_data.csv"  # Name of the csv file containing the data
+    value_column: str = "sensor_readings"  # Name of the column containing the values
+    timestamp_column: str = "timestamp"  # Name of the column containing the timestamps
+    dimension_column: str = "sensor_name"  # Name of the column containing a dimension (e.g. sensor name, or location, etc)
+    window_size: int = 20  # Size of the window used to compute the anomaly score
+    minute_resample: int = 5  # Resample the data to this minute resolution
+    ad_mode: str = "entire"  # Anomaly detection mode to use. Can be "entire" for batch mode or "last" for last point mode.
 
 
 logging.disable()
 
 apikey = os.getenv("ANOMALY_DETECTOR_API_KEY")
 endpoint = os.getenv("ANOMALY_DETECTOR_ENDPOINT")
-
-np.random.seed(1)
 
 # Read CSV:
 df = pd.read_csv(Config.csv_name)
@@ -66,9 +64,6 @@ df.index = df.index.map(lambda x: parse(str(x).replace("@", "")))
 # Convert index to datatime:
 df.index = pd.to_datetime(df.index)
 
-
-
-# -------------------------
 source = ColumnDataSource(
     dict(
         time=[],
@@ -82,7 +77,7 @@ source = ColumnDataSource(
         color=[],
     )
 )
-# -------------------------
+
 p = figure(
     height=500,
     width=1200,
@@ -90,6 +85,7 @@ p = figure(
     x_axis_type="datetime",
     y_axis_location="right",
 )
+
 p.x_range.follow = "end"
 p.y_range.start = 0
 p.xaxis.axis_label = "Time"
@@ -156,7 +152,6 @@ p.line(
 
 p.legend.location = "top_left"
 
-# -------------------------
 sensitivity = Slider(title="sensitivity", value=95, start=0, end=99, step=1)
 max_anomaly_ratio = Slider(
     title="max_anomaly_ratio", value=0.20, start=0, end=1, step=0.05
@@ -164,8 +159,6 @@ max_anomaly_ratio = Slider(
 
 sensor_names = list(df.columns)
 scenario = Select(value=sensor_names[-1], options=sensor_names)
-# -------------------------
-
 adclient = UnivariateAnomalyDetector(key=apikey, endpoint=endpoint)
 
 
@@ -177,6 +170,9 @@ def _get_value(t):
 
 
 def _get_timestamp(t):
+    """
+    Generates a fake timestamp
+    """
     timestamp = datetime.datetime(2015, 1, 1, tzinfo=timezone.utc) + timedelta(
         minutes=Config.minute_resample * t
     )
@@ -184,6 +180,9 @@ def _get_timestamp(t):
 
 
 def _call_ad_api(t):
+    """
+    Creates a request and calls the anomaly detector API, then processes and returns the response
+    """
     values = source.data["values"][-Config.window_size :]
     timestamps = source.data["timestamp_str"][-Config.window_size :]
     request = {}
@@ -200,32 +199,31 @@ def _call_ad_api(t):
     request = ADTimeSeries(request)
     request.validate()
 
-    results = adclient.detect_anomaly(mode=Config.ad_mode, data_dict=request)
+    response = adclient.detect_anomaly(mode=Config.ad_mode, data_dict=request)
 
     if Config.ad_mode == "entire":
-        results["expected_value"] = results["expected_values"][-1]
-        results["upper_margin"] = results["upper_margins"][-1]
-        results["lower_margin"] = results["lower_margins"][-1]
-        results["is_anomaly"] = results["is_anomaly"][-1]
+        response["expected_value"] = response["expected_values"][-1]
+        response["upper_margin"] = response["upper_margins"][-1]
+        response["lower_margin"] = response["lower_margins"][-1]
+        response["is_anomaly"] = response["is_anomaly"][-1]
 
     print(
-        f"Point: {str(t)}: Is anomaly? {results['is_anomaly']} -- Expected value: {results['expected_value']}"
+        f"Point: {str(t)}: Is anomaly? {response['is_anomaly']} -- Expected value: {response['expected_value']}"
     )
 
-    upperband = results["expected_value"] + results["upper_margin"]
-    lowerband = results["expected_value"] - results["lower_margin"]
+    upperband = response["expected_value"] + response["upper_margin"]
+    lowerband = response["expected_value"] - response["lower_margin"]
 
-
-    if results["is_anomaly"]:
+    if response["is_anomaly"]:
         color = "red"
     else:
         color = "navy"
 
     return (
-        results["expected_value"],
+        response["expected_value"],
         upperband,
         lowerband,
-        results["is_anomaly"],
+        response["is_anomaly"],
         color,
     )
 
@@ -262,4 +260,4 @@ def update(t):
 
 curdoc().add_root(column(row(max_anomaly_ratio, sensitivity, scenario), p))
 curdoc().add_periodic_callback(update, 50)
-curdoc().title = "Live Anomaly Detection on Methane Measurement Data"
+curdoc().title = "Anomaly Detector API Demo"
