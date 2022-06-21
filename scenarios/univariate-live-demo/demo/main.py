@@ -68,12 +68,7 @@ df.index = df.index.map(lambda x: parse(str(x).replace("@", "")))
 # Convert index to datatime:
 df.index = pd.to_datetime(df.index)
 
-severity_colors = {
-    "Low": "gold",
-    "Medium": "orange",
-    "High": "tomato",
-    "Very High": "deeppink",
-}
+
 
 # -------------------------
 source = ColumnDataSource(
@@ -222,12 +217,9 @@ def _call_ad_api(t):
     upperband = results["expected_value"] + results["upper_margin"]
     lowerband = results["expected_value"] - results["lower_margin"]
 
-    # Get color based on whether we have severity scores or not:
+
     if results["is_anomaly"]:
         color = "red"
-        if config.ad_mode == "entire":
-            # severity scores only available for entire mode
-            color = severity_colors[results["severity_scores"][-1]]
     else:
         color = "navy"
 
