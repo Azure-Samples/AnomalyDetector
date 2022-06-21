@@ -6,9 +6,9 @@
 
 import datetime
 import logging
+import os
 from dataclasses import dataclass
 from datetime import timedelta, timezone
-from os.path import join as pjoin
 
 import numpy as np
 import pandas as pd
@@ -20,31 +20,31 @@ from dateutil.parser import parse
 
 from utils import ADTimeSeries, UnivariateAnomalyDetector
 
-# TODO:
-# Update readme, and add a gif of the demo
-# Dataset..
-
 
 @dataclass
 class config:
-    csv_name = "sensor_data.csv"
-    value_column = "sensor_readings"
-    timestamp_column = "timestamp"
-    sensor_column = "sensor_name"
-    window_size = 20
-    minute_resample = 5
-    ad_mode = "entire"
+    """
+    Dataclass to store the default configuration for the demo. Please change the values if you 
+    want to use your own data.
+    """
+    csv_name: str = "sensor_data.csv" # Name of the csv file containing the data
+    value_column: str = "sensor_readings" # Name of the column containing the values
+    timestamp_column: str = "timestamp" # Name of the column containing the timestamps
+    sensor_column: str = "sensor_name" # Name of the column containing a dimension (e.g. sensor name, or location, etc)
+    window_size: int = 20 # Size of the window used to compute the anomaly score
+    minute_resample: int = 5 # Resample the data to this minute resolution
+    ad_mode: str = "entire" # Anomaly detection mode to use. Can be "entire" for batch mode or "last" for last point mode.
 
 
 logging.disable()
 
-apikey = "2d6b1b8d6bd243f3a5032d078327a1f0" # os.getenv("ANOMALY_DETECTOR_API_KEY")
-endpoint = "https://saylibapat-anomaly.cognitiveservices.azure.com/" #os.getenv("ANOMALY_DETECTOR_ENDPOINT")
+apikey = os.getenv("ANOMALY_DETECTOR_API_KEY")
+endpoint = os.getenv("ANOMALY_DETECTOR_ENDPOINT")
 
 np.random.seed(1)
 
 # Read CSV:
-df = pd.read_csv(pjoin("data", config.csv_name))
+df = pd.read_csv(config.csv_name)
 
 # Drop any columns that are no longer needed (and might have NaNs):
 df = df[[config.timestamp_column, config.sensor_column, config.value_column]]
