@@ -223,9 +223,7 @@ class UnivariateAnomalyDetector:
         try:
             if mode == "entire":
                 logger.debug("Calling Anomaly Detector API in entire data series mode.")
-                resp = self.client.detect_entire_series(request).as_dict()
-                resp["severity_scores"] = self.compute_severity_scores(data_dict, resp)
-                return resp
+                return self.client.detect_entire_series(request).as_dict()
 
             if mode == "last":
                 logger.debug("Calling Anomaly Detector API in last point mode.")
