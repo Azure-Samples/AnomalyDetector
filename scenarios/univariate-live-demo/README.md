@@ -1,6 +1,6 @@
 # Anomaly Detection Live Demo Instructions
 
-![A screenshot the live demo](image.png)
+![A screenshot the live demo](image.webp)
 
 Please note: this live demo is only intended to demonstrate the Anomaly Detector API on any CSV file that follows a simple schema. This demo loops over the provided data (with fake timestamps) to demonstrate the anomaly detection API. It does not use the real timestamps provided in the raw data, and should not be used in any production scenario. Once the demo is running, you will be able to see the raw data and the results from the anomaly detection API in the browser. 
 
