@@ -31,7 +31,7 @@ class Config:
     value_column: str = "sensor_readings"  # Name of the column containing the values
     timestamp_column: str = "timestamp"  # Name of the column containing the timestamps
     dimension_column: str = "sensor_name"  # Name of the column containing a dimension (e.g. sensor name, or location, etc)
-    window_size: int = 20  # Size of the window used to compute the anomaly score
+    window_size: int = 50  # Size of the window used to compute the anomaly score
     minute_resample: int = 5  # Resample the data to this minute resolution
     ad_mode: str = "entire"  # Anomaly detection mode to use. Can be "entire" for batch mode or "last" for last point mode.
 
@@ -259,5 +259,5 @@ def update(t):
 
 
 curdoc().add_root(column(row(max_anomaly_ratio, sensitivity, scenario), p))
-curdoc().add_periodic_callback(update, 50)
+curdoc().add_periodic_callback(update, 100)
 curdoc().title = "Anomaly Detector API Demo"
