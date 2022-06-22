@@ -1,6 +1,6 @@
 # Anomaly Detection Live Demo Instructions
 
-![A screenshot the live demo](image.webp)
+![A screenshot of the live demo](image.webp)
 
 Please note: this live demo is only intended to demonstrate the Anomaly Detector API on any CSV file that follows a simple schema. This demo loops over the provided data (with fake timestamps) to demonstrate the anomaly detection API. It does not use the real timestamps provided in the raw data, and should not be used in any production scenario. Once the demo is running, you will be able to see the raw data and the results from the anomaly detection API in the browser. 
 
@@ -8,7 +8,7 @@ In your CSV file, you need at least three columns. A column for the timestamp, a
 
 ## Step 1 - Setup
 
-We recommend installing [VS Code](https://code.visualstudio.com/) locally to be able to run this demo if you are using Azure Machine Learning (AML) compute. If you are not, the demo should still work in most Ubuntu-based environments. However, you might run into issues running this demo using JupyterLab or Windows Subsystem for Linux (WSL). 
+We recommend installing [VS Code](https://code.visualstudio.com/) locally to be able to run this demo if you are using Azure Machine Learning (AML) compute or any other remote machine. If you are not using AML, just skip ahead to Step 2. The demo should still work in any Ubuntu-based environment.
 
 With VS Code installed, navigate to your AML resource in the Azure portal, and click on `Launch Studio`. On the left, click on the `Compute` tab. Finally, under the `Applications` column, click the `VS Code` link corresponding to the compute instance that you would like to use. When asked by VS Code to `Allow an extension to open this URI?` click `Open`.
 
@@ -31,15 +31,9 @@ export ANOMALY_DETECTOR_ENDPOINT=<anomaly-detector-endpoint>
 
 ## Step 3 - Adjusting the configuration (Optional)
 
-If you plan to use your own CSV to run this demo, take some time to review and adjust the default configuration in the `demo.py` file. For the purposes of this demo, the default configuration is listed within `demo.py` as a Python data class with default values. Feel free to modify the values to match your own needs.
+If you plan to use your own CSV to run this demo, take some time to review and adjust the default configuration in the `demo.py` file. For the purposes of this demo, the default configuration is stored within `demo.py` as a Python data class with default values. Feel free to modify the values to match your own needs.
 
 ```python 
-@dataclass
-class Config:
-    """
-    Data class to store the default configuration for the demo. Please change the values if you 
-    want to use your own data.
-    """
     csv_name: str = "sensor_data.csv" # Name of the csv file containing the data
     value_column: str = "sensor_readings" # Name of the column containing the values
     timestamp_column: str = "timestamp" # Name of the column containing the timestamps
