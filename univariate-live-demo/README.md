@@ -2,13 +2,13 @@
 
 ![A screenshot of the live demo](image.webp)
 
-Please note: this live demo is only intended to demonstrate the Anomaly Detector API on any CSV file that follows a simple schema. This demo loops over the provided data (with fake timestamps) to demonstrate the anomaly detection API. It does not use the real timestamps provided in the raw data, and should not be used in any production scenario. Once the demo is running, you will be able to see the raw data and the results from the anomaly detection API in the browser. 
+Please note: this live demo is only intended to demonstrate the Anomaly Detector API on any CSV file that follows a simple schema. This demo loops over the provided data (with fake timestamps) to demonstrate the anomaly detection API. It does not use the real timestamps provided in the raw data, and should not be used in any production scenario. Once the demo is running, you will be able to see the raw data and the results from the anomaly detection API in the browser. Alternatively, you can also use the online Anomaly Detector [demo page](https://algoevaluation.azurewebsites.net/#/) to evaluate the API on your own data.
 
 In your CSV file, you need at least three columns. A column for the timestamp, a column for the values you want to perform anomaly detection, and finally, a dimension column that allows you to run the anomaly detection API across different categories (e.g. different sensors, different regions, or even different variables). The timestamp column should be in the ISO 8601 format `YYYY-MM-DDTHH:MM:SSZ`. If you intend to use your own CSV, please see the `sensor_data.csv` file for how to structure that CSV file.
 
 ## Step 1 - Setup
 
-We recommend installing [VS Code](https://code.visualstudio.com/) locally to be able to run this demo if you are using Azure Machine Learning (AML) compute or any other remote machine. If you are not using AML, just skip ahead to Step 2. The demo should still work in any Ubuntu-based environment.
+The demo should work in any Linux-based environment using any integrated development environment (IDE). If you choose to use Azure Machine Learning (AML) compute, you should install [VS Code](https://code.visualstudio.com/) locally to be able to run this demo. **If you are not using AML, just skip ahead to Step 2**.
 
 With VS Code installed, navigate to your AML resource in the Azure portal, and click on `Launch Studio`. On the left, click on the `Compute` tab. Finally, under the `Applications` column, click the `VS Code` link corresponding to the compute instance that you would like to use. When asked by VS Code to `Allow an extension to open this URI?` click `Open`.
 
