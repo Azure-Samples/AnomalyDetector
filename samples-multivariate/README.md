@@ -19,7 +19,7 @@ This repository contains samples for [Anomaly Detector API](https://aka.ms/anoma
 ## Prerequisites
 
 You must have an [Anomaly Detector API resource](https://aka.ms/adnew). Before continuing, you will need the API key and the endpoint from your Azure dashboard.
-   ![Get Anomaly Detector access keys](./media/cognitive-services-get-access-keys.png "Get Anomaly Detector access keys")
+   ![Get Anomaly Detector access keys](../media/cognitive-services-get-access-keys.png "Get Anomaly Detector access keys")
 
 Or you could create a 7-day free resource of Anomaly Detector from [here](https://azure.microsoft.com/en-us/try/cognitive-services/my-apis/).
 
@@ -36,10 +36,10 @@ Please read [Best practices for using the Anomaly Detector API](https://aka.ms/a
 
 | Langauge | Sample Code|
 |:---------|:-----------|
-| Python    | [Sample](https://github.com/Azure-Samples/AnomalyDetector/tree/master/quickstarts-multivariate/Python) |
-| C#        | [Sample](https://github.com/Azure-Samples/AnomalyDetector/tree/master/quickstarts-multivariate/CSharp) |
-| Java      | [Sample](https://github.com/Azure-Samples/AnomalyDetector/tree/master/quickstarts-multivariate/Java)   |
-| JavaScript| [Sample](https://github.com/Azure-Samples/AnomalyDetector/tree/master/quickstarts-multivariate/JavaScript) |
+| Python    | [Sample](./Python) |
+| C#        | [Sample](./CSharp) |
+| Java      | [Sample](./Java)   |
+| JavaScript| [Sample](./JavaScript) |
 
 ## Example data
-Properly formatted multivariate sample data can be found in this [zip file](https://github.com/Azure-Samples/AnomalyDetector/tree/master/quickstarts-multivariate/multivariate_sample_data)
+Properly formatted multivariate sample data can be found in this [zip file](./multivariate_sample_data)
