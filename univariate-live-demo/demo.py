@@ -5,7 +5,6 @@
 # -------------------------------------------------------------
 
 import datetime
-import logging
 import os
 from dataclasses import dataclass
 from datetime import timedelta, timezone
@@ -30,21 +29,53 @@ class Config:
     csv_name: str = "sensor_data.csv"  # Name of the csv file containing the data
     value_column: str = "sensor_readings"  # Name of the column containing the values
     timestamp_column: str = "timestamp"  # Name of the column containing the timestamps
-    dimension_column: str = "sensor_name"  # Name of the column containing a dimension (e.g. sensor name, or location, etc)
+    dimension_column: str = "sensor_name"  # (Optional) Name of the column containing a dimension (e.g. sensor name, or location, etc). If your data does not have this column, set it to None.
     window_size: int = 50  # Size of the window used to compute the anomaly score
     minute_resample: int = 5  # Resample the data to this minute resolution
     ad_mode: str = "entire"  # Anomaly detection mode to use. Can be "entire" for batch mode or "last" for last point mode.
 
 
-logging.disable()
+class MissingEnvironmentVariable(Exception):
+    """
+    Exception to be thrown when a required environment variable is not set.
+    """
 
+    pass
+
+
+# Read environment variables:
 apikey = os.getenv("ANOMALY_DETECTOR_API_KEY")
 endpoint = os.getenv("ANOMALY_DETECTOR_ENDPOINT")
 
-# Read CSV:
-df = pd.read_csv(Config.csv_name)
+if apikey is None or endpoint is None:
+    raise MissingEnvironmentVariable(
+        "Please ensure ANOMALY_DETECTOR_API_KEY and ANOMALY_DETECTOR_ENDPOINT environment variables are set!"
+    )
 
-# Drop any columns that are no longer needed (and might have NaNs):
+# Read CSV:
+try:
+    df = pd.read_csv(Config.csv_name)
+except FileNotFoundError:
+    raise FileNotFoundError(
+        f"Please ensure the file {Config.csv_name} exists in the current directory!"
+    )
+
+# Validate the configuration:
+if Config.timestamp_column not in df.columns:
+    raise ValueError("Please ensure the timestamp column is present in the CSV!")
+elif Config.value_column not in df.columns:
+    raise ValueError("Please ensure the value column is present in the CSV!")
+
+if Config.dimension_column is None:
+    Config.dimension_column = "dimension"
+    df[[Config.dimension_column]] = "main_dimension"
+else:
+    if Config.dimension_column not in df.columns:
+        raise ValueError(
+            f"Please ensure the dimension column is present in the CSV! ({Config.dimension_column})"
+        )
+
+# Extract the relevant columns:
 df = df[[Config.timestamp_column, Config.dimension_column, Config.value_column]]
 
 # Drop rows with NaNs:
