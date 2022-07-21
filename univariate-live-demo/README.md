@@ -4,7 +4,7 @@
 
 Please note: this live demo is only intended to demonstrate the Anomaly Detector API on any CSV file that follows a simple schema. This demo loops over the provided data (with fake timestamps) to demonstrate the anomaly detection API. It does not use the real timestamps provided in the raw data, and should not be used in any production scenario. Once the demo is running, you will be able to see the raw data and the results from the anomaly detection API in the browser. Alternatively, you can also use the online Anomaly Detector [demo page](https://algoevaluation.azurewebsites.net/#/) to evaluate the API on your own data.
 
-In your CSV file, you need at least three columns. A column for the timestamp, a column for the values you want to perform anomaly detection, and finally, a dimension column that allows you to run the anomaly detection API across different categories (e.g. different sensors, different regions, or even different variables). The timestamp column should be in the ISO 8601 format `YYYY-MM-DDTHH:MM:SSZ`. If you intend to use your own CSV, please see the `sensor_data.csv` file for how to structure that CSV file.
+In your CSV file, you need at least two columns. A column for the timestamp and column for the values you want to perform anomaly detection on. In addition, you can include an *optional* dimension column that allows you to run the anomaly detection API across different categories (e.g. different sensors, different regions, or even different variables) through a drop down selection menu in the demo. The timestamp column should be in the ISO 8601 format `YYYY-MM-DDTHH:MM:SSZ`. If you intend to use your own CSV, please see the `sensor_data.csv` file for how to structure that CSV file.
 
 ## Step 1 - Setup
 
@@ -34,14 +34,15 @@ export ANOMALY_DETECTOR_ENDPOINT=<anomaly-detector-endpoint>
 If you plan to use your own CSV to run this demo, take some time to review and adjust the default configuration in the `demo.py` file. For the purposes of this demo, the default configuration is stored within `demo.py` as a Python data class with default values. Feel free to modify the values to match your own needs.
 
 ```python 
-    csv_name: str = "sensor_data.csv" # Name of the csv file containing the data
-    value_column: str = "sensor_readings" # Name of the column containing the values
-    timestamp_column: str = "timestamp" # Name of the column containing the timestamps
-    dimension_column: str = "sensor_name" # Name of the column containing a dimension (e.g. sensor name, or location, etc)
-    window_size: int = 20 # Size of the window used to compute the anomaly score
-    minute_resample: int = 5 # Resample the data to this minute resolution
-    ad_mode: str = "entire" # Anomaly detection mode to use. Can be "entire" for batch mode or "last" for last point mode.
+    csv_name: str = "sensor_data.csv"  # Name of the csv file containing the data
+    value_column: str = "sensor_readings"  # Name of the column containing the values
+    timestamp_column: str = "timestamp"  # Name of the column containing the timestamps
+    dimension_column: str = "sensor_name"  # (Optional) Name of the column containing a dimension (e.g. sensor name, or location, etc). If your data does not have this column, set it to None.
+    window_size: int = 50  # Size of the window used to compute the anomaly score
+    minute_resample: int = 5  # Resample the data to this minute resolution
+    ad_mode: str = "entire"  # Anomaly detection mode to use. Can be "entire" for batch mode or "last" for last point mode.
 ```
+If your data does not have the optional dimension column, please set the `dimension_column` in the `demo.py` script to `None`.
 
 ## Step 4 - Running the demo
 
