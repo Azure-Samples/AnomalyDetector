@@ -1,20 +1,3 @@
----
-page_type: sample
-languages:
-- csharp
-- java
-- python
-- typescript
-- go
-- ruby
-products:
-- azure
-- azure-cognitive-services
-- azure-anomaly-detector
-description: "This repository contains samples for Anomaly Detector API. The Anomaly Detector API enables you to monitor and find abnormalities in your time series data by automatically identifying and applying the correct statistical models, regardless of industry, scenario, or data volume."
-urlFragment: AnomalyDetector
----
-
 # Anomaly Detector API Samples
 
 This repository contains API samples and SDK samples for [Anomaly Detector API](https://aka.ms/anomalydetector). The Anomaly Detector API enables you to monitor and find abnormalities in your time series data by automatically identifying and applying the correct statistical models, regardless of industry, scenario, or data volume.
