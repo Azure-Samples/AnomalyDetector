@@ -23,7 +23,7 @@ This repository is organized in the following structure, we recommend you go to 
 
 | Folder | Description |
 |-------------|-------------|
-| 🆕`demo-notebook`       | API and SDK sample codes written in python notebook for UVAD adn MVAD. The latest update will start from here first. 😉 |
+| 🆕`ipython-notebook`       | API and SDK sample codes written in python notebook for UVAD adn MVAD. The latest update will start from here first. 😉 |
 | `sampledata` | All the sample datasets that are used in this repository. |
 | `sample-multivariate`       | Sample SDK codes for MVAD(preview version) using 4 languages, will update to GA version soon.  |
 | `sample-univariate`       | Sample API and SDK codes for UVAD using 4 languages.  |
