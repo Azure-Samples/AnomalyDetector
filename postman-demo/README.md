@@ -40,7 +40,7 @@ Please click this button to fork the API collection:
 3. In the response of the first API, copy the modelId and paste it in the `modelId` in **Environments**, click **Save**. Then go to **Collections**, click on the second API - **Get model status**, and click **Send**.
 ![](https://i.imgur.com/tqUznIu.gif)
 
-4. Select the third API - **Batch Detection**, and click **Send**. This API will trigger a synchronous inference task, and you should use the Get batch detection results API several times to get the status and the final results.
+4. Select the third API - **Batch Detection**, and click **Send**. This API will trigger an asynchronous inference task, and you should use the Get batch detection results API several times to get the status and the final results.
 ![](https://i.imgur.com/OjaE6XK.png)
 
 5. In the response of the third API, copy the resultId and paste it in the `resultId` in **Environments**, click **Save**. Then go to **Collections**, click on the fourth API - Get batch detection results, and click **Send**.
