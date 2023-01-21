@@ -1,4 +1,5 @@
 {
+  "period": 7,
   "granularity": "daily",
   "series": [
     {
