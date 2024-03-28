@@ -13,7 +13,7 @@ jupyter_contrib_nbextensions
 jupyterlab
 numpy
 pandas
-pip==21.1
+pip==23.3
 pydantic
 python-dateutil==2.8.2
 requests
