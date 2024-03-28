@@ -10,20 +10,21 @@ products:
 
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
-These python notebooks show you how to start detecting anomalies in your data with the Anomaly Detector API, and visualizing the information returned by it. 
+These python notebooks show you how to start detecting anomalies in your data with the Anomaly Detector API, and visualizing the information returned by it.
 
 ## Contents
 
 | File/folder | Description |
 |-------------|-------------|
-| `src`       | Jupyter notebooks and source code. |
-| `.gitignore` | Define what to ignore at commit time. |
+| `API Sample`       | Jupyter notebooks of how to use the Anomaly Detector APIs. |
+| `SDK Sample` | Jupyter notebooks of how to use the Anomaly Detector SDKs. |
+| `Media` | Images that used in the notebooks. |
 | `README.md` | This README file. |
 | `LICENSE`   | The license for the sample. |
 
 ## Prerequisites
 
-- A [Cognitive Services API account](https://docs.microsoft.com/azure/cognitive-services/cognitive-services-apis-create-account) with access to the Anomaly Detector API. Before continuing, You will need the access key from your Azure dashboard.
+- [Create an Anomaly Detector resource](https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesAnomalyDetector) with access to the Anomaly Detector API. Before continuing, you will need the endpoint and key of this resource.
 ## Running the sample
 
 You can run this sample locally as a Jupyter notebook.
@@ -45,3 +46,4 @@ The Anomaly Detector API lets you monitor and detect abnormalities in your time 
 ## Next steps
 
 For more information, see the [Anomaly Detector API documentation](https://aka.ms/anomaly-detector-documentation). 
+Need support? [Join the Anomaly Detector Community](https://forms.office.com/pages/responsepage.aspx?id=v4j5cvGGr0GRqy180BHbR2Ci-wb6-iNDoBoNxrnEk9VURjNXUU1VREpOT0U1UEdURkc0OVRLSkZBNC4u).

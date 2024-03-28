@@ -1,8 +1,0 @@
-﻿################################################################################
-# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
-################################################################################
-
-/packages/Newtonsoft.Json.11.0.2
-/AnomalyDetection/obj/Debug
-/AnomalyDetection/bin/Debug
-/.vs/AnomalyDetectionSample/v15/.suo
