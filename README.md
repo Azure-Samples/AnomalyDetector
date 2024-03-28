@@ -1,6 +1,16 @@
-# Anomaly Detector API Samples
+# Anomaly Detector Samples
 
-This repository contains API samples and SDK samples for [Anomaly Detector API](https://aka.ms/anomalydetector). The Anomaly Detector API enables you to monitor and find abnormalities in your time series data by automatically identifying and applying the correct statistical models, regardless of industry, scenario, or data volume.
+This repository contains API samples and SDK samples for [Anomaly Detector service](https://aka.ms/anomalydetector). Anomaly Detector enables you to monitor and find abnormalities in your time series data by automatically identifying and applying the correct statistical models, regardless of industry, scenario, or data volume.
+
+## What's new?
+
+### March 2024: Anomaly Detector Now Available on PYPI 🎉
+
+In March 2024, we proudly announce the release of the Anomaly Detector package on PYPI! 
+
+While the existing Anomaly Detector as a service will be deprecated by 2026, you can now seamlessly utilize the new package directly on your local machine. No need to create an Azure Anomaly Detector resource—simply install the package and start detecting anomalies right away.
+
+For the latest details and usage instructions, refer to our Python notebook available here: [anomaly-detector-pypi-demo.ipynb](anomaly-detector-pypi-demo.ipynb)
 
 ## 👋About Anomaly Detector
 [Anomaly Detector](https://learn.microsoft.com/en-us/azure/cognitive-services/anomaly-detector/overview) is an AI service with a set of APIs, which enables you to monitor and detect anomalies in your time series data with little ML knowledge, either batch validation or real-time inference.
