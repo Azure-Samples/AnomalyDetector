@@ -4,7 +4,7 @@ azure-core==1.24.1
 azureml-core==1.41.0
 black
 bokeh
-bokeh==2.4.3
+bokeh==3.8.2
 ipykernel==6.15.0
 ipympl
 jupyter
